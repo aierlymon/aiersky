@@ -72,7 +72,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
     @Override
-    public void showMainMsg(String a) {
+    public void responseNet(String a) {
         showToast(a);
     }
 
