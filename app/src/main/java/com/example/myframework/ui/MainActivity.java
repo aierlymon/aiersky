@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.widget.TextView;
 
 import com.example.baselib.base.BaseMvpTitleActivity;
-import com.example.baselib.utils.MyLog;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
