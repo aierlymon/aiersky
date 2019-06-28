@@ -25,8 +25,8 @@ public class MainPresenter extends BasePresenter<MainView> {
 
                     @Override
                     public void onSuccess(TestBean testBean) {
-                        MyLog.i("testBean："+testBean);
-                        getView().showMainMsg(testBean.getWeatherinfo().getCity());
+                        MyLog.i("testBean："+testBean+"  Thread: "+Thread.currentThread().getName());
+                        getView().responseNet(testBean.getWeatherinfo().getCity());
                     }
 
                     @Override

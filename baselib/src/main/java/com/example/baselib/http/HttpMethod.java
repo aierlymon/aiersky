@@ -2,6 +2,8 @@ package com.example.baselib.http;
 
 import com.example.baselib.BuildConfig;
 import com.example.baselib.http.bean.TestBean;
+import com.example.baselib.http.interrceptorebean.LoggingInterceptor;
+import com.example.baselib.utils.MyLog;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +39,7 @@ public class HttpMethod {
                 loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 //设置 Debug Log 模式
                 builder.addInterceptor(loggingInterceptor);
+                builder.addInterceptor(new LoggingInterceptor());
             }
             OkHttpClient okHttpClient = builder.build();
             mRetrofit = new Retrofit.Builder()
@@ -64,6 +67,7 @@ public class HttpMethod {
     }
 
     public Observable<TestBean> getCityWeather(String cityId){
+        MyLog.i("getCityWeather: Thread: "+Thread.currentThread().getName());
        return mMovieService.loadDataByRetrofit(cityId);
     }
 }
