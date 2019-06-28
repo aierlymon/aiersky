@@ -43,15 +43,6 @@ public class TestFragment extends BaseMVPFragment<TestFraView, TestFraPresenter>
 
     }
 
-    @Override
-    public void showDefaultMsg(String msg) {
-
-    }
-
-    @Override
-    public void showMsg(String msg) {
-
-    }
 
     @Override
     public void showError(String msg) {

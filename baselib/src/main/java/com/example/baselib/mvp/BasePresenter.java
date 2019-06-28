@@ -16,6 +16,7 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
     //视图接口类
     protected WeakReference<V> mView;
 
+    //retrofit的订阅事件管理类
     private CompositeDisposable mCompositeDisposable;
 
 
@@ -28,7 +29,6 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
         EventBus.getDefault().register(this);
 
 
-
         mView=new WeakReference<>(view);
 
     }
@@ -37,6 +37,7 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
         return mView.get();
     }
 
+    //这线程被调用
     public void addDisposable(Disposable disposable){
         if(mCompositeDisposable==null){
             mCompositeDisposable=new CompositeDisposable();

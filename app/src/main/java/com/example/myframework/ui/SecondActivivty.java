@@ -5,12 +5,17 @@ import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.SecondPresenter;
 import com.example.myframework.mvp.views.SecondView;
 
-public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter> {
+public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter> implements SecondView{
 
 
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected void startRequest() {
+
     }
 
     @Override
@@ -23,15 +28,8 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
 
     }
 
-    @Override
-    public void showDefaultMsg(String msg) {
 
-    }
 
-    @Override
-    public void showMsg(String msg) {
-
-    }
 
     @Override
     public void showError(String msg) {

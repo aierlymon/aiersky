@@ -42,8 +42,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
     protected abstract int getLayoutRes();
 
-   //开始请求
-   public void startRequest(){};
+   //开始请求(在初始化试图之后执行)
+   protected abstract void startRequest();
 
    //是否使用事件总线
    public boolean isUseEventBus(){return false;};

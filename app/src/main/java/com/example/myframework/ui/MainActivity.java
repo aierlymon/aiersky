@@ -40,14 +40,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void startRequest() {
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
 
@@ -71,24 +65,15 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     }
 
-    @Override
-    public void showDefaultMsg(String msg) {
 
-    }
-
-    @Override
-    public void showMsg(String msg) {
-
-    }
 
     @Override
     public void showError(String msg) {
-
+        showToast("出错误了： "+msg);
     }
 
     @Override
     public void showMainMsg(String a) {
-        MyLog.i("我走到了这里快要吐司了");
         showToast(a);
     }
 
