@@ -1,25 +1,30 @@
 package com.example.baselib.http;
 
 import com.example.baselib.BuildConfig;
+import com.example.baselib.http.bean.TestBean;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.baselib.http.MovieService.DEFAULT_TIME_OUT;
+import static com.example.baselib.http.HttpConstant.DEFAULT_TIME_OUT;
 
 /**
  * createBy ${huanghao}
  * on 2019/6/28
+ * data 以后所有请求的调用方法写在这里,然后所有请求路径和方式放到MovieService,由一个MovieService同意调用
  */
 public class HttpMethod {
     public static Retrofit mRetrofit;
+    //以后所有请求的调用方法写在这里,然后所有请求路径和方式放到MovieService,由一个MovieService同意调用
+    private MovieService mMovieService;
 
-    public static Retrofit retrofit() {
+    private  HttpMethod() {
         if (mRetrofit == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);//连接 超时时间
@@ -36,14 +41,29 @@ public class HttpMethod {
             OkHttpClient okHttpClient = builder.build();
             mRetrofit = new Retrofit.Builder()
                     //设置基础地址
-                    .baseUrl(MovieService.BASE_URL)
+                    .baseUrl(HttpConstant.BASE_URL)
                     //这个把返回的数据转换为gson
                     .addConverterFactory(GsonConverterFactory.create())
                     //这个为了支持rxjva
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(okHttpClient)
                     .build();
+            mMovieService = mRetrofit.create(MovieService.class);
         }
-        return mRetrofit;
+
+    }
+
+    //在访问HttpMethods时创建单例
+    private static class SingletonHolder {
+        private static final HttpMethod INSTANCE = new HttpMethod();
+    }
+
+    //获取单例
+    public static HttpMethod getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    public Observable<TestBean> getCityWeather(String cityId){
+       return mMovieService.loadDataByRetrofit(cityId);
     }
 }

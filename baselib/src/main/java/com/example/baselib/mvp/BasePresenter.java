@@ -9,6 +9,8 @@ import io.reactivex.disposables.Disposable;
 /**
  * createBy ${huanghao}
  * on 2019/6/26
+ * data
+ *   ps:在这里添加eventbus是了以后再实现presenter那里可以进行数据传递
  */
 public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
 
@@ -16,7 +18,7 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
     //视图接口类
     protected WeakReference<V> mView;
 
-    //retrofit的订阅事件管理类
+    //retrofit的订阅事件管理类,防止内存泄漏
     private CompositeDisposable mCompositeDisposable;
 
 

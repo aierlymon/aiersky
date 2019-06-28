@@ -3,6 +3,7 @@ package com.example.baselib.http;
 /**
  * createBy ${huanghao}
  * on 2019/6/28
+ * data 这个是作为如果有相同的数据请求返回，可以外面再包一层
  */
 public class HttpResult<T> {
 

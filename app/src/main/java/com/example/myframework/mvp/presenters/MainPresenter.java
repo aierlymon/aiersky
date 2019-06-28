@@ -1,8 +1,6 @@
 package com.example.myframework.mvp.presenters;
 
 import com.example.baselib.http.HttpMethod;
-import com.example.baselib.http.HttpResult;
-import com.example.baselib.http.MovieService;
 import com.example.baselib.http.bean.TestBean;
 import com.example.baselib.mvp.BasePresenter;
 import com.example.baselib.utils.MyLog;
@@ -20,10 +18,10 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void success(String s) {
-        HttpMethod.retrofit().create(MovieService.class).loadDataByRetrofit("101190201").
-                subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread()).
-                subscribe(new Observer<TestBean>() {
+        HttpMethod.getInstance().getCityWeather("101190201")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<TestBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         MyLog.i("拿到了任务: "+Thread.currentThread().getName());
