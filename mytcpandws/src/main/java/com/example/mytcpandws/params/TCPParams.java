@@ -17,4 +17,5 @@ public class TCPParams {
 
 
     public static String RCEV="data";//接受数据的key
+    public static String SEND="msg";//发送数据的key
 }

@@ -15,7 +15,8 @@ ext {
             glideSdkVersion         : "4.8.0",
             rxJava                  : "2.2.2",
             rxAndroid               : "2.1.0",
-            bufferknife             : "8.8.1"
+            bufferknife             : "8.8.1",
+            javawebsocket           : "1.4.0"
     ]
 
     supportDeps = [
@@ -49,18 +50,22 @@ ext {
     ]
 
     commonDeps = [
-            "logger"              : 'com.orhanobut:logger:2.2.0',
-            "glide"               : 'com.github.bumptech.glide:glide:4.8.0',
-            "eventbus"            : 'org.greenrobot:eventbus:3.0.0',
-            "spinkit"             : 'com.github.ybq:Android-SpinKit:1.2.0',
-          /*  "arouter"             : 'com.alibaba:arouter-api:1.4.0',*/
-            "rxpermissions"       : 'com.github.tbruyelle:rxpermissions:0.10.2',
-            "bufferknife"         : "com.jakewharton:butterknife:${dependVersion.bufferknife}",
+            "logger"       : 'com.orhanobut:logger:2.2.0',
+            "glide"        : 'com.github.bumptech.glide:glide:4.8.0',
+            "eventbus"     : 'org.greenrobot:eventbus:3.0.0',
+            "spinkit"      : 'com.github.ybq:Android-SpinKit:1.2.0',
+            /*  "arouter"             : 'com.alibaba:arouter-api:1.4.0',*/
+            "rxpermissions": 'com.github.tbruyelle:rxpermissions:0.10.2',
+            "bufferknife"  : "com.jakewharton:butterknife:${dependVersion.bufferknife}",
 
     ]
 
-    annotationProcessorList=[
+    annotationProcessorList = [
             "butterknife-compiler": "com.jakewharton:butterknife-compiler:${dependVersion.bufferknife}"
+    ]
+
+    javawebsocket = [
+            "javawebsockey": "org.java-websocket:Java-WebSocket:${dependVersion.javawebsocket}"
     ]
 
 
