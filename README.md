@@ -7,5 +7,5 @@
 这个就是rxjava+mvp+retrofit+eventbus+glide+butterknife+leakcanary
 
 <h1>mytcpandws</h1>
-这个就是tcp的封装包
+这个就是tcp的封装包</br>
 ps:要启动是否有网络时候可以调用这个包里面的一个网络状态广播
