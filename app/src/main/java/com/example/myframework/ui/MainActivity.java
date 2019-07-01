@@ -17,7 +17,9 @@ import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
 import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
 import com.example.mytcpandws.params.TCPParams;
+import com.example.mytcpandws.params.WSParams;
 import com.example.mytcpandws.tcpconnect.ConnectThread;
+import com.example.mytcpandws.ws.client.WebSocketThread;
 
 import java.lang.ref.WeakReference;
 
@@ -40,6 +42,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     private MyHandler myHandler;
     private ConnectThread<MyHandler> connectThread;
     private NetWorkStateBroadcast netWorkStateBroadcast;
+    private WSHandler mWSHandler;
+    private WebSocketThread<WSHandler> myHandlerWebSocketThread;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -60,25 +64,29 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         ButterKnife.bind(this);
         tx.setText("你好");
 
-        myHandler=new MyHandler(this);
+        myHandler = new MyHandler(this);
+        mWSHandler = new WSHandler(this);
         registe();
     }
 
     private void registe() {
-        netWorkStateBroadcast=new NetWorkStateBroadcast();
+        netWorkStateBroadcast = new NetWorkStateBroadcast();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(netWorkStateBroadcast,filter);
+        registerReceiver(netWorkStateBroadcast, filter);
     }
 
     @Override
     protected void startRequest() {
         //开始tcp连接
 
-        connectThread=new ConnectThread("192.168.43.104",8083,myHandler);
-        connectThread.start();
+        connectThread = new ConnectThread("192.168.43.104", 8083, myHandler);
+       // connectThread.start();
+
+        myHandlerWebSocketThread  = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
+        myHandlerWebSocketThread.start();
     }
 
 
@@ -103,7 +111,6 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
 
-
     @Override
     public void showError(String msg) {
         showToast("出错误了： " + msg);
@@ -114,7 +121,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         showToast(a);
     }
 
-    @OnClick({R.id.btn, R.id.tcp_btn})
+    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn:
@@ -123,11 +130,16 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
             case R.id.tcp_btn:
                 connectThread.send("Hello Java");
                 send_data.setText("Hello Java");//这个意思一下= =
-            break;
+                break;
+            case R.id.ws_btn:
+                myHandlerWebSocketThread.send("Hello C");
+                send_data.setText("Hello C");//这个意思一下= =
+                break;
         }
 
     }
 
+    //这个是tcp的handler
     class MyHandler extends Handler {
         private WeakReference<MainActivity> mWeakReference;
 
@@ -142,7 +154,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
             if (mainActivity == null) {
                 return;
             }
-            switch (msg.what){
+            switch (msg.what) {
                 case TCPParams.TCP_HANDLE_CONNECT_ERROR:
                     MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_ERROR");
                     break;
@@ -154,9 +166,44 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                     break;
                 case TCPParams.TCP_HANDLE_RECEIVE:
                     MyLog.i("MainActivity的接受: TCP_HANDLE_RECEIVE");
-                    Bundle bundle=msg.getData();
-                    String receive=bundle.getString(TCPParams.RCEV);
-                    receive_data.setText("接收的数据是: "+receive);
+                    Bundle bundle = msg.getData();
+                    String receive = bundle.getString(TCPParams.RCEV);
+                    receive_data.setText("接收的数据是: " + receive);
+                    break;
+            }
+        }
+    }
+
+    //这个式ws的handler
+    class WSHandler extends Handler {
+        private WeakReference<MainActivity> mWeakReference;
+
+        public WSHandler(MainActivity activity) {
+            mWeakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            MainActivity mainActivity = mWeakReference.get();
+            if (mainActivity == null) {
+                return;
+            }
+            switch (msg.what) {
+                case WSParams.WS_HANDLE_CONNECT_SUCCESS:
+                    MyLog.i("MainActivity的接受: WS_HANDLE_CONNECT_SUCCESS");
+                    break;
+                case WSParams.WS_HANDLE_CONNECT_BREAK:
+                    MyLog.i("MainActivity的接受: WS_HANDLE_CONNECT_BREAK");
+                    break;
+                case WSParams.WS_HANDLE_RECEIVE:
+                    MyLog.i("MainActivity的接受: WS_HANDLE_RECEIVE");
+                    Bundle bundle = msg.getData();
+                    String receive = bundle.getString(WSParams.RCEV);
+                    receive_data.setText("接收的数据是: " + receive);
+                    break;
+                case WSParams.WS_HANDLE_ERROR:
+                    MyLog.i("MainActivity的接受: WS_HANDLE_ERROR");
                     break;
             }
         }

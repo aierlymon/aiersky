@@ -57,13 +57,13 @@ public class ConnectUntil {
         }
 
         channel = channelFuture.awaitUninterruptibly().channel();
-        Log.i("mylog", "start: awaitUninterruptibly().channel();");
+        //Log.i("mylog", "start: awaitUninterruptibly().channel();");
         if (channel.isActive()&&channel.isOpen() && channel.isWritable()) {
-            Log.i("mylog", "isOpen()");
+          //  Log.i("mylog", "isOpen()");
             ConnectUntilBox.getMap().put(ip + ":" + port, this);
             return ConnectUntilBox.OpenSocketsuccessful;
         } else {
-            Log.i("mylog", "isOpen() false");
+          //  Log.i("mylog", "isOpen() false");
             reciveMsgListener.onConnectFail(ConnectUntil.this);
             return ConnectUntilBox.NoRouteToHost;
         }

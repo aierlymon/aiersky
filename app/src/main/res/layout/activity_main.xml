@@ -19,23 +19,30 @@
         android:id="@+id/btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="测试按钮"/>
+        android:text="测试按钮" />
 
     <Button
         android:id="@+id/tcp_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="发送tcp数据" />
 
     <TextView
         android:id="@+id/send_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发送的数据是："/>
+        android:text="发送的数据是：" />
 
     <TextView
         android:id="@+id/receive_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="接受的数据是"/>
+        android:text="接受的数据是" />
+
+    <Button
+        android:id="@+id/ws_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="发送ws数据" />
 
 </LinearLayout>

@@ -107,11 +107,11 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
         sendUi(TCP_HANDLE_CONNECT_ERROR,null);
 
         if (TCPParams.isNetWork.get()) {
-            Log.i("mylog", "restart()");
+          //  Log.i("mylog", "restart()");
             //在网络正常的时候才试图重连
             connectUntil.restart();
         } else {
-            Log.i("mylog", "close()");
+           // Log.i("mylog", "close()");
             connectUntil.close();
         }
     }
