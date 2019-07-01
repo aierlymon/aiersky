@@ -7,17 +7,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.mytcpandws.params.TCPParams;
-import com.example.mytcpandws.params.WSParams;
-import com.example.mytcpandws.utils.MyLog;
 
 import java.io.UnsupportedEncodingException;
 
 import static com.example.mytcpandws.params.TCPParams.RCEV;
 import static com.example.mytcpandws.params.TCPParams.SEND;
-import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_CONNECTING;
 import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_CONNECT_BREAK;
+import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_CONNECT_ERROR;
 import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_CONNECT_SUCCESS;
 import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_RECEIVE;
 
@@ -41,7 +40,7 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
         this.mainHandler = mMainHandler;
     }
 
-    public void send(long id, String msg) {
+    public void send(String msg) {
         Message message = Message.obtain();
         message.what = TcpConnectHandler.SEND;
         Bundle bundle = new Bundle();
@@ -55,12 +54,9 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
     public void run() {
         super.run();
         //正在连接网络
-       sendUi(TCP_HANDLE_CONNECTING,null);
         mConnectUntil = new ConnectUntil(ip, port);
         mConnectUntil.setReciveMsgListener(this);
         mConnectUntil.start();
-        //网络连接完成
-        sendUi(TCP_HANDLE_CONNECT_SUCCESS,null);
         Looper.prepare();
         mConnectHandler = new TcpConnectHandler();
         Looper.loop();
@@ -84,7 +80,6 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
 
     @Override
     public void onRecive(ConnectUntil connectUntil, byte[] msg) {
-        MyLog.i("数据为： " + new String(msg, 0, msg.length));
         String info = new String(msg, 0, msg.length);
 
         Message message = Message.obtain();
@@ -98,7 +93,6 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
 
     @Override
     public void onConnect(ConnectUntil connectUntil) {
-        MyLog.i("onConnect: 连接成功: ");
         sendUi(TCP_HANDLE_CONNECT_SUCCESS,null);
     }
 
@@ -110,11 +104,14 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
 
     @Override
     public void onConnectFail(ConnectUntil connectUntil) {
-        MyLog.i("onDisConnect: 连接失败");
+        sendUi(TCP_HANDLE_CONNECT_ERROR,null);
+
         if (TCPParams.isNetWork.get()) {
+            Log.i("mylog", "restart()");
             //在网络正常的时候才试图重连
             connectUntil.restart();
         } else {
+            Log.i("mylog", "close()");
             connectUntil.close();
         }
     }

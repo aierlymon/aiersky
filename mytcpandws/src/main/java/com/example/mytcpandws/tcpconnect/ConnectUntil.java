@@ -1,6 +1,6 @@
 package com.example.mytcpandws.tcpconnect;
 
-import com.example.mytcpandws.utils.MyLog;
+import android.util.Log;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -53,16 +53,17 @@ public class ConnectUntil {
         bootstrap.handler(new SimpleClientInitializer());
 
         if (ip != null) {
-            MyLog.i("ip: "+ip+"  port： "+port);
             channelFuture = bootstrap.connect(new InetSocketAddress(ip, port));
         }
 
         channel = channelFuture.awaitUninterruptibly().channel();
-
-        if (channel.isOpen() && channel.isWritable()) {
+        Log.i("mylog", "start: awaitUninterruptibly().channel();");
+        if (channel.isActive()&&channel.isOpen() && channel.isWritable()) {
+            Log.i("mylog", "isOpen()");
             ConnectUntilBox.getMap().put(ip + ":" + port, this);
             return ConnectUntilBox.OpenSocketsuccessful;
         } else {
+            Log.i("mylog", "isOpen() false");
             reciveMsgListener.onConnectFail(ConnectUntil.this);
             return ConnectUntilBox.NoRouteToHost;
         }
@@ -137,6 +138,7 @@ public class ConnectUntil {
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             super.channelActive(ctx);
             //当连接上的时候
+            if(ctx.channel().isOpen()&&ctx.channel().isWritable())
             reciveMsgListener.onConnect(ConnectUntil.this);
         }
 
@@ -144,7 +146,6 @@ public class ConnectUntil {
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
             super.channelInactive(ctx);
             //当连接断开的时候
-            MyLog.i("channelInactive: 连接断开了");
             reciveMsgListener.onDisConnect(ConnectUntil.this);
         }
 
@@ -172,7 +173,6 @@ public class ConnectUntil {
                 if (ctx.channel().isOpen() && ctx.channel().isWritable())
                     ctx.channel().writeAndFlush("ping");
             }
-            MyLog.i("发送数据了");
         }
     }
 

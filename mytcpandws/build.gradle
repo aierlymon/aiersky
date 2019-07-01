@@ -26,6 +26,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation rootProject.ext.testDeps["junit"]
-    implementation files('libs/netty-all-4.1.27.Final.jar')
+   // implementation files('libs/netty-all-4.1.27.Final.jar')
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.27.Final'
     implementation rootProject.ext.javawebsocket["javawebsockey"]
 }

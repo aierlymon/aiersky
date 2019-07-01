@@ -8,7 +8,6 @@ import android.os.Message;
 import android.text.TextUtils;
 
 import com.example.mytcpandws.params.WSParams;
-import com.example.mytcpandws.utils.MyLog;
 
 /**
  * createBy ${huanghao}
@@ -93,7 +92,6 @@ public class WebSocketThread<T extends Handler> extends Thread implements WebSoc
     }
 
     public void send(String msg) {
-        MyLog.i("mConnectHandler: "+mConnectHandler);
         if (mConnectHandler != null) {
             Message message = Message.obtain();
             Bundle bundle = new Bundle();

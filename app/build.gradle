@@ -9,6 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     compileOptions {
@@ -32,4 +33,5 @@ dependencies {
     annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
 
     implementation project(':baselib')
+    implementation project(path:':mytcpandws')
 }

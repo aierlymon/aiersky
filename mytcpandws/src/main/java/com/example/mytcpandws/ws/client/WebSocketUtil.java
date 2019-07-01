@@ -1,7 +1,5 @@
 package com.example.mytcpandws.ws.client;
 
-import com.example.mytcpandws.utils.MyLog;
-
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
@@ -90,15 +88,10 @@ public class WebSocketUtil {
         }
     }
 
-    private void closeConnect() {
-        try {
-            if (null != client) {
-                client.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            client = null;
+    public void restart() throws InterruptedException {
+        if(client.isOpen()){
+            client.close();
         }
+        client.connectBlocking();
     }
 }

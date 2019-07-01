@@ -41,4 +41,6 @@ dependencies {
     //引用module的butterknife的时候那个引用的build.gradle要加这个，不然引用失败，无法调用
     annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
 
+    implementation 'com.android.support:multidex:1.0.3'
+
 }

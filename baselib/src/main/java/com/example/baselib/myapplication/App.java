@@ -2,6 +2,7 @@ package com.example.baselib.myapplication;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
@@ -18,6 +19,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mRefWatcher=setupLeakCanary();
+        // 主要是添加下面这句代码
+        MultiDex.install(this);
     }
 
     @Override

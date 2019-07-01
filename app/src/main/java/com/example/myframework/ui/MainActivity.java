@@ -1,12 +1,25 @@
 package com.example.myframework.ui;
 
 import android.annotation.SuppressLint;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.baselib.base.BaseMvpTitleActivity;
+import com.example.baselib.utils.MyLog;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
+import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
+import com.example.mytcpandws.params.TCPParams;
+import com.example.mytcpandws.tcpconnect.ConnectThread;
+
+import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,6 +30,16 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     @BindView(R.id.textview1)
     TextView tx;
+
+    @BindView(R.id.send_data)
+    TextView send_data;
+
+    @BindView(R.id.receive_data)
+    TextView receive_data;
+
+    private MyHandler myHandler;
+    private ConnectThread<MyHandler> connectThread;
+    private NetWorkStateBroadcast netWorkStateBroadcast;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -36,11 +59,26 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         //绑定黄油刀
         ButterKnife.bind(this);
         tx.setText("你好");
+
+        myHandler=new MyHandler(this);
+        registe();
+    }
+
+    private void registe() {
+        netWorkStateBroadcast=new NetWorkStateBroadcast();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netWorkStateBroadcast,filter);
     }
 
     @Override
     protected void startRequest() {
+        //开始tcp连接
 
+        connectThread=new ConnectThread("192.168.43.104",8083,myHandler);
+        connectThread.start();
     }
 
 
@@ -68,7 +106,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     @Override
     public void showError(String msg) {
-        showToast("出错误了： "+msg);
+        showToast("出错误了： " + msg);
     }
 
     @Override
@@ -76,10 +114,57 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         showToast(a);
     }
 
-    @OnClick(R.id.btn)
-    public void onClick(){
-        mPresenter.success("Hello World");
+    @OnClick({R.id.btn, R.id.tcp_btn})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn:
+                mPresenter.success("Hello World");
+                break;
+            case R.id.tcp_btn:
+                connectThread.send("Hello Java");
+                send_data.setText("Hello Java");//这个意思一下= =
+            break;
+        }
+
     }
 
+    class MyHandler extends Handler {
+        private WeakReference<MainActivity> mWeakReference;
 
+        public MyHandler(MainActivity activity) {
+            mWeakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            MainActivity mainActivity = mWeakReference.get();
+            if (mainActivity == null) {
+                return;
+            }
+            switch (msg.what){
+                case TCPParams.TCP_HANDLE_CONNECT_ERROR:
+                    MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_ERROR");
+                    break;
+                case TCPParams.TCP_HANDLE_CONNECT_BREAK:
+                    MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_BREAK");
+                    break;
+                case TCPParams.TCP_HANDLE_CONNECT_SUCCESS:
+                    MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_SUCCESS");
+                    break;
+                case TCPParams.TCP_HANDLE_RECEIVE:
+                    MyLog.i("MainActivity的接受: TCP_HANDLE_RECEIVE");
+                    Bundle bundle=msg.getData();
+                    String receive=bundle.getString(TCPParams.RCEV);
+                    receive_data.setText("接收的数据是: "+receive);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(netWorkStateBroadcast);
+    }
 }
