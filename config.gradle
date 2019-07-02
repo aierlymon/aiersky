@@ -16,7 +16,9 @@ ext {
             rxJava                  : "2.2.2",
             rxAndroid               : "2.1.0",
             bufferknife             : "8.8.1",
-            javawebsocket           : "1.4.0"
+            javawebsocket           : "1.4.0",
+            multidex                : "1.0.3",
+            netty                   : "4.1.27.Final"
     ]
 
     supportDeps = [
@@ -44,6 +46,7 @@ ext {
     testDeps = [
             "junit"                    : 'junit:junit:4.12',
             "leakcanary-debug"         : 'com.squareup.leakcanary:leakcanary-android:1.6.1',
+             //no-op是指No Operation Performed，代表不会做任何操作，不会干扰正式用户的使用；
             "leakcanary-release"       : 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1',
             "leakcanary-debug-fragment": 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1',
 
@@ -54,7 +57,6 @@ ext {
             "glide"        : 'com.github.bumptech.glide:glide:4.8.0',
             "eventbus"     : 'org.greenrobot:eventbus:3.0.0',
             "spinkit"      : 'com.github.ybq:Android-SpinKit:1.2.0',
-            /*  "arouter"             : 'com.alibaba:arouter-api:1.4.0',*/
             "rxpermissions": 'com.github.tbruyelle:rxpermissions:0.10.2',
             "bufferknife"  : "com.jakewharton:butterknife:${dependVersion.bufferknife}",
 
@@ -66,6 +68,14 @@ ext {
 
     javawebsocket = [
             "javawebsockey": "org.java-websocket:Java-WebSocket:${dependVersion.javawebsocket}"
+    ]
+
+    multidex = [
+            "multidex": "com.android.support:multidex:${dependVersion.multidex}"
+    ]
+
+    netty = [
+            "netty": "io.netty:netty-all:${dependVersion.netty}"
     ]
 
 

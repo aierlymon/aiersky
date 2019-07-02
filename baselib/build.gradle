@@ -24,8 +24,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    testImplementation rootProject.ext.testDeps["junit"]
     //leakCanary
     debugApi rootProject.ext.testDeps["leakcanary-debug"]
     releaseApi rootProject.ext.testDeps["leakcanary-release"]
@@ -41,6 +39,5 @@ dependencies {
     //引用module的butterknife的时候那个引用的build.gradle要加这个，不然引用失败，无法调用
     annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
 
-    implementation 'com.android.support:multidex:1.0.3'
-
+    implementation rootProject.ext.multidex["multidex"]
 }

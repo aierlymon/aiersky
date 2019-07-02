@@ -1,7 +1,5 @@
 package com.example.mytcpandws.tcpconnect;
 
-import android.util.Log;
-
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;

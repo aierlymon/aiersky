@@ -1,7 +1,10 @@
 package com.example.myframework.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 import com.example.baselib.base.BaseMvpTitleActivity;
 import com.example.baselib.utils.MyLog;
 import com.example.myframework.R;
+import com.example.myframework.manager.TestManager;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
 import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
@@ -67,6 +71,11 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         myHandler = new MyHandler(this);
         mWSHandler = new WSHandler(this);
         registe();
+
+
+       TestManager manager= TestManager.getInstance(this);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gl);
+        manager.test(bitmap);
     }
 
     private void registe() {
@@ -83,7 +92,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         //开始tcp连接
 
         connectThread = new ConnectThread("192.168.43.104", 8083, myHandler);
-       // connectThread.start();
+        connectThread.start();
 
         myHandlerWebSocketThread  = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
         myHandlerWebSocketThread.start();
@@ -121,7 +130,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         showToast(a);
     }
 
-    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn})
+    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn,R.id.btn_intent})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn:
@@ -135,9 +144,16 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 myHandlerWebSocketThread.send("Hello C");
                 send_data.setText("Hello C");//这个意思一下= =
                 break;
+            case R.id.btn_intent:
+
+                Intent intent=new Intent(MainActivity.this,SecondActivivty.class);
+                startActivity(intent);
+                finish();
+                break;
         }
 
     }
+
 
     //这个是tcp的handler
     class MyHandler extends Handler {

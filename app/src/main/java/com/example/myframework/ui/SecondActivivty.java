@@ -15,7 +15,6 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
 
     @Override
     protected void startRequest() {
-
     }
 
     @Override
