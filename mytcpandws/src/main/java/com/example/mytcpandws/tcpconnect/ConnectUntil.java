@@ -1,5 +1,7 @@
 package com.example.mytcpandws.tcpconnect;
 
+import android.util.Log;
+
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +72,7 @@ public class ConnectUntil {
 
 
     public int send(byte[] bys) {
+        Log.i("mylog", "send: "+Thread.currentThread().getName());
         if (channel != null && channel.isOpen() && channel.isWritable()) {
             ByteBuf byteBuf = channel.alloc().buffer();
             byteBuf.resetWriterIndex();
@@ -102,13 +105,19 @@ public class ConnectUntil {
         return ip;
     }
 
+
+
     public interface ReciveMsgListener {
+        //接收到数据
         void onRecive(ConnectUntil connectUntil, byte[] msg);
 
+        //连接成功
         void onConnect(ConnectUntil connectUntil);
 
+        //连接被断开
         void onDisConnect(ConnectUntil connectUntil);
 
+        //连接失败，无法找到主机
         void onConnectFail(ConnectUntil connectUntil);
     }
 
@@ -174,16 +183,10 @@ public class ConnectUntil {
         }
     }
 
-    //通道可写,但是不一定连到对端
-    public boolean isWritable() {
-        if (channel.isOpen() &&channel.isRegistered()&& channel.isWritable()) {
-            return true;
-        }
-        return false;
-    }
 
     //通道正常
     public boolean isActive() {
+        if(channel==null)return false;
         if (channel.isOpen() && channel.isWritable()&&channel.isActive()) {
             return true;
         }

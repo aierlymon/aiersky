@@ -3,8 +3,6 @@ package com.example.myframework.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -14,15 +12,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.baselib.base.BaseMvpTitleActivity;
+import com.example.baselib.utils.LoadDialogUtil;
 import com.example.baselib.utils.MyLog;
 import com.example.myframework.R;
-import com.example.myframework.manager.TestManager;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
 import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
 import com.example.mytcpandws.params.WSParams;
-import com.example.mytcpandws.tcpconnect.ConnectThread;
-import com.example.mytcpandws.tcpconnect.ConnectUntil;
 import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
 import com.example.mytcpandws.ws.client.WebSocketThread;
 
@@ -47,7 +43,6 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     private NetWorkStateBroadcast netWorkStateBroadcast;
     private WSHandler mWSHandler;
     private WebSocketThread<WSHandler> myHandlerWebSocketThread;
-    private ConnectThread connectThread;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -72,10 +67,9 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         mWSHandler = new WSHandler(this);
         registe();
 
-
-       TestManager manager= TestManager.getInstance(this);
+      /*  TestManager manager = TestManager.getInstance(this);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gl);
-        manager.test(bitmap);
+        manager.test(bitmap);*/
     }
 
     private void registe() {
@@ -84,11 +78,15 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
             @Override
             public void onNetWorkSuccess() {
                 //可以请求tcp网络重连
+                MyLog.i("检测到网络切换恢复: "+Thread.currentThread().getName());
+                //  mPresenter.startClient();
             }
 
             @Override
             public void onNetWorkFail() {
                 //可以关闭tcp网络
+                MyLog.i("检测到网络切换中");
+                //   mPresenter.closeTcp();
             }
         });
         IntentFilter filter = new IntentFilter();
@@ -101,32 +99,11 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     @Override
     protected void startRequest() {
         //开始tcp连接
+        mPresenter.startClient();
 
-        connectThread = new ConnectThread("192.168.43.104", 8083, new ConnectThread.OnConnectStateChangeListener() {
-            @Override
-            public void onConnect() {
-
-            }
-
-            @Override
-            public void onDisConnect(ConnectUntil connectUntil) {
-
-            }
-
-            @Override
-            public void onConnectFail(ConnectUntil connectUntil) {
-
-            }
-
-            @Override
-            public void onReceive(String msg) {
-
-            }
-        });
-        connectThread.start();
-
-        myHandlerWebSocketThread  = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
-        myHandlerWebSocketThread.start();
+        //开启ws
+        myHandlerWebSocketThread = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
+        // myHandlerWebSocketThread.start();
     }
 
 
@@ -142,12 +119,12 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     @Override
     public void showLoading() {
-
+        LoadDialogUtil.getInstance().getLoadDialog(this).show();
     }
 
     @Override
     public void hideLoading() {
-
+        LoadDialogUtil.getInstance().getLoadDialog(this).cancel();
     }
 
 
@@ -161,14 +138,14 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         showToast(a);
     }
 
-    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn,R.id.btn_intent})
+    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn, R.id.btn_intent})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn:
                 mPresenter.success("Hello World");
                 break;
             case R.id.tcp_btn:
-                connectThread.send("Hello Java");
+                mPresenter.startClient().send("你好");
                 send_data.setText("Hello Java");//这个意思一下= =
                 break;
             case R.id.ws_btn:
@@ -177,14 +154,13 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 break;
             case R.id.btn_intent:
 
-                Intent intent=new Intent(MainActivity.this,SecondActivivty.class);
+                Intent intent = new Intent(MainActivity.this, SecondActivivty.class);
                 startActivity(intent);
                 finish();
                 break;
         }
 
     }
-
 
 
     //这个式ws的handler
@@ -230,7 +206,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         //取消广播注册
         unregisterReceiver(netWorkStateBroadcast);
         //关闭ws
-        if(myHandlerWebSocketThread!=null){
+        if (myHandlerWebSocketThread != null) {
             myHandlerWebSocketThread.close();
         }
     }
