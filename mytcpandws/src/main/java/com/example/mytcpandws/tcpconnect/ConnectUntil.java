@@ -174,8 +174,17 @@ public class ConnectUntil {
         }
     }
 
-    public boolean isConnect() {
-        if (channel.isOpen() && channel.isWritable()) {
+    //通道可写,但是不一定连到对端
+    public boolean isWritable() {
+        if (channel.isOpen() &&channel.isRegistered()&& channel.isWritable()) {
+            return true;
+        }
+        return false;
+    }
+
+    //通道正常
+    public boolean isActive() {
+        if (channel.isOpen() && channel.isWritable()&&channel.isActive()) {
             return true;
         }
         return false;

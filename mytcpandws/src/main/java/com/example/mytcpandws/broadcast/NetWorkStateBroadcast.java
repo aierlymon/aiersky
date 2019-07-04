@@ -14,6 +14,16 @@ import com.example.mytcpandws.params.TCPParams;
 
 public class NetWorkStateBroadcast extends BroadcastReceiver {
 
+    public interface OnNetStateChangListener{
+        void onNetWorkSuccess();
+        void onNetWorkFail();
+    }
+
+    private OnNetStateChangListener mOnNetStateChangListener;
+
+    public void setmOnNetStateChangListener(OnNetStateChangListener mOnNetStateChangListener) {
+        this.mOnNetStateChangListener = mOnNetStateChangListener;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -26,8 +36,10 @@ public class NetWorkStateBroadcast extends BroadcastReceiver {
                 if (NetworkInfo.State.CONNECTED == info.getState() && info.isAvailable()) {
                     if (info.getType() == ConnectivityManager.TYPE_WIFI || info.getType() == ConnectivityManager.TYPE_MOBILE) {
                         TCPParams.isNetWork.set(true);
+                        if(mOnNetStateChangListener!=null)mOnNetStateChangListener.onNetWorkSuccess();
                     }
                 } else {
+                    if(mOnNetStateChangListener!=null)mOnNetStateChangListener.onNetWorkFail();
                     TCPParams.isNetWork.set(false);
                 }
             }

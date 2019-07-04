@@ -16,6 +16,5 @@ public class TCPParams {
     public static final int TCP_HANDLE_RECEIVE=3;//接收到TCP返回的数据
 
 
-    public static String RCEV="data";//接受数据的key
     public static String SEND="msg";//发送数据的key
 }

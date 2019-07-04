@@ -1,1 +1,1 @@
-include ':app', ':baselib', ':mytcpandws'
+include ':app', ':baselib', ':mytcpandws', ':zxinglib'

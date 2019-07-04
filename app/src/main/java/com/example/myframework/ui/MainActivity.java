@@ -20,9 +20,10 @@ import com.example.myframework.manager.TestManager;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
 import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
-import com.example.mytcpandws.params.TCPParams;
 import com.example.mytcpandws.params.WSParams;
 import com.example.mytcpandws.tcpconnect.ConnectThread;
+import com.example.mytcpandws.tcpconnect.ConnectUntil;
+import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
 import com.example.mytcpandws.ws.client.WebSocketThread;
 
 import java.lang.ref.WeakReference;
@@ -43,11 +44,10 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     @BindView(R.id.receive_data)
     TextView receive_data;
 
-    private MyHandler myHandler;
-    private ConnectThread<MyHandler> connectThread;
     private NetWorkStateBroadcast netWorkStateBroadcast;
     private WSHandler mWSHandler;
     private WebSocketThread<WSHandler> myHandlerWebSocketThread;
+    private ConnectThread connectThread;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -58,6 +58,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     @Override
     public void initView() {
         //状态就是看到wifi图标的那一个细栏
+        MyLog.i("创建了");
         //setStatusBarColor
         setStatusBarColor(R.color.design_default_color_primary);
         super.initView();
@@ -68,7 +69,6 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         ButterKnife.bind(this);
         tx.setText("你好");
 
-        myHandler = new MyHandler(this);
         mWSHandler = new WSHandler(this);
         registe();
 
@@ -80,6 +80,17 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     private void registe() {
         netWorkStateBroadcast = new NetWorkStateBroadcast();
+        netWorkStateBroadcast.setmOnNetStateChangListener(new NetWorkStateBroadcast.OnNetStateChangListener() {
+            @Override
+            public void onNetWorkSuccess() {
+                //可以请求tcp网络重连
+            }
+
+            @Override
+            public void onNetWorkFail() {
+                //可以关闭tcp网络
+            }
+        });
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -91,7 +102,27 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     protected void startRequest() {
         //开始tcp连接
 
-        connectThread = new ConnectThread("192.168.43.104", 8083, myHandler);
+        connectThread = new ConnectThread("192.168.43.104", 8083, new ConnectThread.OnConnectStateChangeListener() {
+            @Override
+            public void onConnect() {
+
+            }
+
+            @Override
+            public void onDisConnect(ConnectUntil connectUntil) {
+
+            }
+
+            @Override
+            public void onConnectFail(ConnectUntil connectUntil) {
+
+            }
+
+            @Override
+            public void onReceive(String msg) {
+
+            }
+        });
         connectThread.start();
 
         myHandlerWebSocketThread  = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
@@ -155,40 +186,6 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
 
-    //这个是tcp的handler
-    class MyHandler extends Handler {
-        private WeakReference<MainActivity> mWeakReference;
-
-        public MyHandler(MainActivity activity) {
-            mWeakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            MainActivity mainActivity = mWeakReference.get();
-            if (mainActivity == null) {
-                return;
-            }
-            switch (msg.what) {
-                case TCPParams.TCP_HANDLE_CONNECT_ERROR:
-                    MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_ERROR");
-                    break;
-                case TCPParams.TCP_HANDLE_CONNECT_BREAK:
-                    MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_BREAK");
-                    break;
-                case TCPParams.TCP_HANDLE_CONNECT_SUCCESS:
-                    MyLog.i("MainActivity的接受: TCP_HANDLE_CONNECT_SUCCESS");
-                    break;
-                case TCPParams.TCP_HANDLE_RECEIVE:
-                    MyLog.i("MainActivity的接受: TCP_HANDLE_RECEIVE");
-                    Bundle bundle = msg.getData();
-                    String receive = bundle.getString(TCPParams.RCEV);
-                    receive_data.setText("接收的数据是: " + receive);
-                    break;
-            }
-        }
-    }
 
     //这个式ws的handler
     class WSHandler extends Handler {
@@ -228,6 +225,13 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //关闭tcp连接
+        ConnectUntilBox.closeAllContainGroup(true);
+        //取消广播注册
         unregisterReceiver(netWorkStateBroadcast);
+        //关闭ws
+        if(myHandlerWebSocketThread!=null){
+            myHandlerWebSocketThread.close();
+        }
     }
 }

@@ -17,7 +17,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void success(String s) {
-
         HttpMethod.getInstance().getCityWeather("101190201")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

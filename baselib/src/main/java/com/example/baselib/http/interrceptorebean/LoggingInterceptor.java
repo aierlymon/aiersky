@@ -18,6 +18,6 @@ public class LoggingInterceptor implements Interceptor {
         //都在io线程时候就拦截到了
         MyLog.i("request: "+chain.request().url().host()+"  thread: "+Thread.currentThread().getName());
         MyLog.i("response: "+chain.proceed(chain.request()).body().string()+" thread: "+Thread.currentThread().getName());
-        return null;
+        return chain.proceed(chain.request());
     }
 }

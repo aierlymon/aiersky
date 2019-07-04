@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.TextUtils;
 
 import com.example.mytcpandws.params.TCPParams;
 
 import java.io.UnsupportedEncodingException;
 
-import static com.example.mytcpandws.params.TCPParams.RCEV;
 import static com.example.mytcpandws.params.TCPParams.SEND;
 import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_CONNECT_BREAK;
 import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_CONNECT_ERROR;
@@ -25,19 +23,31 @@ import static com.example.mytcpandws.params.TCPParams.TCP_HANDLE_RECEIVE;
  * data 好像这个不用线程装起来，因为io.netty自带线程，不过管他呢，问题不大
  */
 
-public class ConnectThread<T extends Handler> extends Thread implements ConnectUntil.ReciveMsgListener {
+public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListener {
 
     private TcpConnectHandler mConnectHandler;
     private String ip;
     private int port;
     private ConnectUntil mConnectUntil;
-    private T mainHandler;
 
-    public ConnectThread(String ip, int port, T mMainHandler) {
+    public interface OnConnectStateChangeListener {
+        void onConnect();
+
+        void onDisConnect(ConnectUntil connectUntil);
+
+        void onConnectFail(ConnectUntil connectUntil);
+
+        void onReceive(String msg);
+    }
+
+    private OnConnectStateChangeListener mConnectStateChangeListener;
+
+    public ConnectThread(String ip, int port, OnConnectStateChangeListener mConnectStateChangeListener) {
         this.ip = ip;
         this.port = port;
-        this.mainHandler = mMainHandler;
+        this.mConnectStateChangeListener = mConnectStateChangeListener;
     }
+
 
     public void send(String msg) {
         Message message = Message.obtain();
@@ -62,61 +72,59 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
     }
 
 
-    private void sendUi(int type, String msg) {
-        if (mainHandler != null) {
-            if (type == TCP_HANDLE_RECEIVE && !TextUtils.isEmpty(msg)) {
-                Message message = Message.obtain();
-                Bundle bundle = new Bundle();
-                bundle.putString(TCPParams.RCEV, msg);
-                message.setData(bundle);
-                message.what = type;
-                mainHandler.sendMessage(message);
-            } else {
-                mainHandler.sendEmptyMessage(type);
-            }
-        }
-    }
-
     @Override
     public void onRecive(ConnectUntil connectUntil, byte[] msg) {
         String info = new String(msg, 0, msg.length);
-
-        Message message = Message.obtain();
-        Bundle bundle = new Bundle();
-        bundle.putString(RCEV, info);
-        message.setData(bundle);
-        message.what = TCP_HANDLE_RECEIVE;
-        mainHandler.sendMessage(message);
-
+        statechange(TCP_HANDLE_RECEIVE,connectUntil,info);
     }
 
     @Override
     public void onConnect(ConnectUntil connectUntil) {
-        sendUi(TCP_HANDLE_CONNECT_SUCCESS,null);
+        statechange(TCP_HANDLE_CONNECT_SUCCESS,connectUntil,null);//连接成功
     }
 
     @Override
     public void onDisConnect(ConnectUntil connectUntil) {
-        sendUi(TCP_HANDLE_CONNECT_BREAK,null);//连接断开
-        mConnectHandler.sendEmptyMessage(TcpConnectHandler.CLOSE);
+        statechange(TCP_HANDLE_CONNECT_BREAK,connectUntil,null);//连接断开
+        close();
     }
 
     @Override
     public void onConnectFail(ConnectUntil connectUntil) {
-        sendUi(TCP_HANDLE_CONNECT_ERROR,null);
-
+        statechange(TCP_HANDLE_CONNECT_BREAK,connectUntil,null);//无法连接主机
+        //这里是设置一直尝试重新连接
         if (TCPParams.isNetWork.get()) {
-          //  Log.i("mylog", "restart()");
             //在网络正常的时候才试图重连
             connectUntil.restart();
         } else {
-           // Log.i("mylog", "close()");
             connectUntil.close();
         }
     }
 
+    public void statechange(int type, ConnectUntil connectUntil, String msg) {
+        switch (type) {
+            case TCP_HANDLE_RECEIVE:
+                //接受到数据
+                mConnectStateChangeListener.onReceive(msg);
+                break;
+            case TCP_HANDLE_CONNECT_SUCCESS:
+                //连接成功
+                mConnectStateChangeListener.onConnect();
+                break;
+            case TCP_HANDLE_CONNECT_BREAK:
+                //断开连接
+                mConnectStateChangeListener.onDisConnect(connectUntil);
+                break;
+            case TCP_HANDLE_CONNECT_ERROR:
+                //无法连接到主机
+                mConnectStateChangeListener.onConnectFail(connectUntil);
+                break;
+        }
+    }
+
     public void close() {
-        mConnectHandler.sendEmptyMessage(TcpConnectHandler.CLOSE);
+        if (mConnectHandler != null)
+            mConnectHandler.sendEmptyMessage(TcpConnectHandler.CLOSE);
     }
 
     class TcpConnectHandler extends Handler {
@@ -129,7 +137,7 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
             switch (msg.what) {
                 case SEND:
                     String info = msg.getData().getString(TCPParams.SEND);
-                    if (mConnectUntil != null && mConnectUntil.isConnect())
+                    if (mConnectUntil != null && mConnectUntil.isActive())
                         try {
                             mConnectUntil.send(info.getBytes("GBK"));
                         } catch (UnsupportedEncodingException e) {
@@ -139,7 +147,6 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
                 case CLOSE:
                     mConnectHandler.removeCallbacksAndMessages(null);
                     mConnectHandler = null;
-                    mainHandler = null;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         Looper.myLooper().quitSafely();
                     } else {
@@ -149,5 +156,13 @@ public class ConnectThread<T extends Handler> extends Thread implements ConnectU
                     break;
             }
         }
+    }
+
+    public boolean isActive(){
+        return mConnectUntil.isActive();
+    }
+
+    public boolean isWritable(){
+        return mConnectUntil.isWritable();
     }
 }

@@ -102,6 +102,12 @@ public class WebSocketThread<T extends Handler> extends Thread implements WebSoc
         }
     }
 
+    public void close(){
+        if( mConnectHandler!=null){
+            mConnectHandler.sendEmptyMessage(WsConnectHandler.CLOSE);
+        }
+    }
+
     class WsConnectHandler extends Handler {
         private static final int SEND = 0;
         private static final int CLOSE = 1;
