@@ -7,9 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class TCPParams {
-
-    public static AtomicBoolean isNetWork=new AtomicBoolean();
-
     public static final int TCP_HANDLE_CONNECT_ERROR=0;//正在连接tcp
     public static final int TCP_HANDLE_CONNECT_SUCCESS=1;//连接成功
     public static final int TCP_HANDLE_CONNECT_BREAK=2;//连接断开

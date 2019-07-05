@@ -19,7 +19,6 @@ public class LoadDialogUtil {
     private CustomDialog loadDialog;
 
     private static LoadDialogUtil loadDialogUtil;
-    private Activity mContext;
     private String msg;
     private int theme;//加载展示的
 
@@ -34,7 +33,7 @@ public class LoadDialogUtil {
         if (loadDialogUtil == null) {
             loadDialogUtil = new LoadDialogUtil();
         }
-        loadDialogUtil.mContext = mContext;
+        loadDialogUtil.weakReference = new WeakReference<>(mContext);
         loadDialogUtil.msg=msg;
         loadDialogUtil.theme=theme;
         return loadDialogUtil;
@@ -45,24 +44,25 @@ public class LoadDialogUtil {
             cancel();
             loadDialog = null;
         }
-        weakReference = new WeakReference<>(mContext);
         CustomDialog.Builder builder = new CustomDialog.Builder(weakReference.get());
         builder.setMessage(msg);
         builder.setTheme(theme);
         loadDialog = builder.create();
         loadDialog.setCanceledOnTouchOutside(false);
+
     }
 
     public void show() {
         getLoadDialog();
         if (loadDialog != null) {
+            if(weakReference.get()!=null&&!weakReference.get().isFinishing())
             loadDialog.show();
         }
     }
 
     public void cancel() {
         if (loadDialog != null) {
-            loadDialog.cancel();
+            loadDialog.dismiss();
             loadDialog = null;
             weakReference.clear();
             weakReference = null;

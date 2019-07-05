@@ -2,6 +2,8 @@ package com.example.mytcpandws.tcpconnect;
 
 import android.util.Log;
 
+import com.example.mytcpandws.utils.MyLog;
+
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
@@ -51,19 +53,18 @@ public class ConnectUntil {
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10 * 1000);
         bootstrap.handler(new SimpleClientInitializer());
+        ConnectUntilBox.getMap().put(ip + ":" + port, this);
 
         if (ip != null) {
             channelFuture = bootstrap.connect(new InetSocketAddress(ip, port));
         }
 
         channel = channelFuture.awaitUninterruptibly().channel();
-        //Log.i("mylog", "start: awaitUninterruptibly().channel();");
+
+
         if (channel.isActive()&&channel.isOpen() && channel.isWritable()) {
-          //  Log.i("mylog", "isOpen()");
-            ConnectUntilBox.getMap().put(ip + ":" + port, this);
             return ConnectUntilBox.OpenSocketsuccessful;
         } else {
-          //  Log.i("mylog", "isOpen() false");
             reciveMsgListener.onConnectFail(ConnectUntil.this);
             return ConnectUntilBox.NoRouteToHost;
         }
@@ -85,17 +86,15 @@ public class ConnectUntil {
 
 
     public int restart() {
-        close();
+        closeClient();
         int state = start();
         return state;
     }
 
-    public void close() {
-        ConnectUntilBox.close(ip, port);
-    }
 
     protected void closeClient() {
-        if (channel != null && channel.isOpen() && channel.isWritable()) {
+        ConnectUntilBox.getMap().put(ip + ":" + port, this);
+        if (channel != null) {
             channel.closeFuture();
             channelFuture.channel().close();
         }
@@ -119,6 +118,14 @@ public class ConnectUntil {
 
         //连接失败，无法找到主机
         void onConnectFail(ConnectUntil connectUntil);
+
+        //停止它的上层调用层线程的其他操作
+        void onStopThread();
+    }
+
+
+    public void stopThread(){
+        reciveMsgListener.onStopThread();
     }
 
     private ReciveMsgListener reciveMsgListener;
@@ -176,9 +183,11 @@ public class ConnectUntil {
         @Override
         public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
             super.userEventTriggered(ctx, evt);
-            if (System.currentTimeMillis() - currentTime > longtime) {
-                if (ctx.channel().isOpen() && ctx.channel().isWritable())
-                    ctx.channel().writeAndFlush("ping");
+            if(ctx.channel().isActive()){
+                if (System.currentTimeMillis() - currentTime > longtime) {
+                    if (ctx.channel().isOpen() && ctx.channel().isWritable())
+                        ctx.channel().writeAndFlush("ping");
+                }
             }
         }
     }

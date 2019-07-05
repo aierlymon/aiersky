@@ -16,11 +16,12 @@ import com.example.baselib.utils.LoadDialogUtil;
 import com.example.baselib.utils.MyLog;
 import com.example.baselib.widget.CustomDialog;
 import com.example.myframework.R;
+import com.example.myframework.broadcast.NetWorkStateBroadcast;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
-import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
 import com.example.mytcpandws.params.WSParams;
 import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
+import com.example.mytcpandws.tcpconnect.TcpClient;
 import com.example.mytcpandws.ws.client.WebSocketThread;
 
 import java.lang.ref.WeakReference;
@@ -99,10 +100,15 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         registerReceiver(netWorkStateBroadcast, filter);
     }
 
+    private TcpClient tcpClient;
     @Override
     protected void startRequest() {
-        //开始tcp连接
-        //  mPresenter.startClient();
+        for(int i=8;i<16;i++){
+            TcpClient tcpClient=new TcpClient("192.168.80."+i,8085,true,true);
+            tcpClient.connect();
+        }
+        tcpClient= new TcpClient("192.168.80.1",8085,true,true);
+        tcpClient.connect();
 
         //开启ws
         myHandlerWebSocketThread = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
@@ -148,7 +154,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 mPresenter.success("Hello World");
                 break;
             case R.id.tcp_btn:
-                mPresenter.startClient().send("你好");
+                tcpClient.send("你好");
                 send_data.setText("Hello Java");//这个意思一下= =
                 break;
             case R.id.ws_btn:
@@ -156,10 +162,9 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 send_data.setText("Hello C");//这个意思一下= =
                 break;
             case R.id.btn_intent:
-
                 Intent intent = new Intent(MainActivity.this, SecondActivivty.class);
                 startActivity(intent);
-                finish();
+              //  finish();
                 break;
         }
 

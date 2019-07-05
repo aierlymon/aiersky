@@ -70,33 +70,29 @@ public class KeyBoardUtil {
         if (destContext == null) {
             return;
         }
-
-        InputMethodManager inputMethodManager = (InputMethodManager) destContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null) {
+        InputMethodManager imm = (InputMethodManager) destContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm == null) {
             return;
         }
-
-        String [] viewArray = new String[]{"mCurRootView", "mServedView", "mNextServedView"};
-        Field filed;
-        Object filedObject;
-
-        for (String view:viewArray) {
-            try{
-                filed = inputMethodManager.getClass().getDeclaredField(view);
-                if (!filed.isAccessible()) {
-                    filed.setAccessible(true);
+        String[] fieldValues = new String[]{"mCurRootView", "mServedView", "mNextServedView"};
+        Object objGet = null;
+        Field oomField = null;
+        for (String fieldValue : fieldValues) {
+            try {
+                oomField = InputMethodManager.class.getDeclaredField(fieldValue);
+                if (oomField == null) {
+                    continue;
                 }
-                filedObject = filed.get(inputMethodManager);
-                if (filedObject != null && filedObject instanceof View) {
-                    View fileView = (View) filedObject;
-                    if (fileView.getContext() == destContext) { // 被InputMethodManager持有引用的context是想要目标销毁的
-                        filed.set(inputMethodManager, null); // 置空，破坏掉path to gc节点
-                    } else {
-                        break;// 不是想要目标销毁的，即为又进了另一层界面了，不要处理，避免影响原逻辑,也就不用继续for循环了
-                    }
+                if (oomField.isAccessible() == false) {
+                    oomField.setAccessible(true);
                 }
-            }catch(Throwable t){
-                t.printStackTrace();
+                objGet = oomField.get(imm);
+                View viewGet = (View) objGet;
+                if (viewGet.getContext() == destContext) {
+                    oomField.set(imm, null);
+                }
+            } catch (Throwable e) {
+                continue;
             }
         }
     }

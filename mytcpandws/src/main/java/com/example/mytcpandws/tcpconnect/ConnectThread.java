@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.example.mytcpandws.params.TCPParams;
+import com.example.mytcpandws.utils.MyLog;
 
 import java.io.UnsupportedEncodingException;
 
@@ -42,6 +43,8 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
 
         //可以看到完整的一条数据的发送过程
         void onProgressLog(String log);
+
+        void onStopThread();
     }
 
     private OnConnectStateChangeListener mConnectStateChangeListener;
@@ -64,7 +67,7 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
             mProgressBuild.append("准备发送就绪->");
             mConnectHandler.sendMessage(message);
         }else{
-            mProgressBuild.append("mConnectHandler 没有生成，建议延时");
+            mProgressBuild.append("->还在连接服务器呢，通道都还没有生成,等下再发送吧亲<-");
             mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
         }
     }
@@ -104,6 +107,13 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
         statechange(TCP_HANDLE_CONNECT_ERROR,connectUntil,null);//无法连接主机
     }
 
+    //停止层触发的一些其他操作,比如无限重连
+    @Override
+    public void onStopThread() {
+        mConnectStateChangeListener.onStopThread();
+    }
+
+
     public void statechange(int type, ConnectUntil connectUntil, String msg) {
         switch (type) {
             case TCP_HANDLE_RECEIVE:
@@ -127,6 +137,7 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
 
     //关闭线程的方法，关闭了线程就结束了
     public void closeClient() {
+        MyLog.i("closeClient");
         if (mConnectHandler != null)
             mConnectHandler.sendEmptyMessage(TcpConnectHandler.CLOSE);
     }
@@ -146,7 +157,7 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
                         try {
                            int state= mConnectUntil.send(info.getBytes("utf-8"));
                            if(state==ConnectUntilBox.SendSuccess){
-                               mProgressBuild.append("恭喜你，发送成功");
+                               mProgressBuild.append("恭喜你，发送成功 sucess!!");
                            }else{
                                mProgressBuild.append("很可惜，通道在准备发送的时候关闭了，数据发送不出");
                            }
@@ -161,8 +172,14 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
 
                     break;
                 case CLOSE:
+                    if(mConnectUntil!=null){
+                        mConnectUntil.closeClient();
+                    }
+                    ConnectUntilBox.getMap().remove(ip+":"+port);
+
                     mConnectHandler.removeCallbacksAndMessages(null);
                     mConnectHandler = null;
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         Looper.myLooper().quitSafely();
                     } else {

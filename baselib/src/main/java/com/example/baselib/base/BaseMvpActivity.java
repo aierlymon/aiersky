@@ -30,6 +30,7 @@ public abstract class BaseMvpActivity<V extends IView,P extends IPresenter<V>> e
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        hideLoading();
         if(mPresenter!=null){
             mPresenter.detachView();
             mPresenter=null;

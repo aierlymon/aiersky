@@ -1,4 +1,4 @@
-package com.example.mytcpandws.broadcast;
+package com.example.myframework.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.example.mytcpandws.params.TCPParams;
 
 /**
  * Created by huanghao on 2018/9/6.
@@ -35,12 +34,10 @@ public class NetWorkStateBroadcast extends BroadcastReceiver {
                 //如果当前的网络连接成功并且网络连接可用
                 if (NetworkInfo.State.CONNECTED == info.getState() && info.isAvailable()) {
                     if (info.getType() == ConnectivityManager.TYPE_WIFI || info.getType() == ConnectivityManager.TYPE_MOBILE) {
-                        TCPParams.isNetWork.set(true);
                         if(mOnNetStateChangListener!=null)mOnNetStateChangListener.onNetWorkSuccess();
                     }
                 } else {
                     if(mOnNetStateChangListener!=null)mOnNetStateChangListener.onNetWorkFail();
-                    TCPParams.isNetWork.set(false);
                 }
             }
         }

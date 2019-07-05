@@ -1,6 +1,8 @@
 package com.example.mytcpandws.tcpconnect;
 
 
+import com.example.mytcpandws.utils.MyLog;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,30 +22,26 @@ public class ConnectUntilBox {
 
     protected static NioEventLoopGroup group = new NioEventLoopGroup(1);
 
+    //这个是绑定所有ConnectUntil，不可以删除（连接过程跳转如果用clientMap记录不到状态）
     private volatile static Map<String, ConnectUntil> map = new HashMap<>();
 
-    protected synchronized static Map<String, ConnectUntil> getMap() {
+
+    public synchronized static Map<String, ConnectUntil> getMap() {
         return map;
     }
 
-
     public synchronized static void closeAllContainGroup(boolean isGroup) {
+        MyLog.i("进来了ConnectUntilBox方法closeAllContainGroup  "+map.size());
         for (Map.Entry<String, ConnectUntil> entry : map.entrySet()) {
             if (((ConnectUntil) entry.getValue()) != null) {
-                ((ConnectUntil) entry.getValue()).close();
-
+                ((ConnectUntil) entry.getValue()).stopThread();
+                ((ConnectUntil) entry.getValue()).closeClient();
             }
         }
         map.clear();
         if (group != null&&isGroup) group.shutdownGracefully();
     }
 
-    public synchronized static void close(String ip, int port) {
-        ConnectUntil c1 = map.get(ip + ":" + port);
-        if (c1 != null) {
-            c1.closeClient();
-            map.remove(ip + ":" + port);
-        }
-    }
+
 
 }

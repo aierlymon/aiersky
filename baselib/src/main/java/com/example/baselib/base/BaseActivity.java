@@ -125,6 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         //取消事件总线
         if (isUseEventBus()) {
             EventBus.getDefault().unregister(this);
