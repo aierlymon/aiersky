@@ -34,7 +34,7 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
     public interface OnConnectStateChangeListener {
         void onConnect(ConnectUntil connectUntil);
 
-        void onDisConnect(ConnectUntil connectUntil);
+        void onDisConnect();
 
         void onConnectFail(ConnectUntil connectUntil);
 
@@ -94,9 +94,9 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
     }
 
     @Override
-    public void onDisConnect(ConnectUntil connectUntil) {
-        closeTcpClient();
-        statechange(TCP_HANDLE_CONNECT_BREAK,connectUntil,null);//连接断开
+    public void onDisConnect() {
+        closeClient();
+        statechange(TCP_HANDLE_CONNECT_BREAK,null,null);//连接断开
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
                 break;
             case TCP_HANDLE_CONNECT_BREAK:
                 //断开连接
-                mConnectStateChangeListener.onDisConnect(connectUntil);
+                mConnectStateChangeListener.onDisConnect();
                 break;
             case TCP_HANDLE_CONNECT_ERROR:
                 //无法连接到主机
@@ -126,14 +126,11 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
     }
 
     //关闭线程的方法，关闭了线程就结束了
-    public void closeThread() {
+    public void closeClient() {
         if (mConnectHandler != null)
             mConnectHandler.sendEmptyMessage(TcpConnectHandler.CLOSE);
     }
 
-    public void closeTcpClient(){
-        if(mConnectUntil!=null)mConnectUntil.close();
-    }
 
     class TcpConnectHandler extends Handler {
         public static final int SEND = 0x01;//发送指令

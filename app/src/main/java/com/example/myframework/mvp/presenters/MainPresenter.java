@@ -52,7 +52,7 @@ public class MainPresenter extends BasePresenter<MainView> {
             if (connectThread.isActive()) {
                 return connectThread;
             } else {
-                connectThread.closeTcpClient();
+                connectThread.closeClient();
                 connectThread = null;
             }
         }
@@ -65,11 +65,11 @@ public class MainPresenter extends BasePresenter<MainView> {
             }
 
             @Override
-            public void onDisConnect(ConnectUntil connectUntil) {
+            public void onDisConnect() {
+                //connectUntil 已经没救了了
                 //连接主动断开，再次启动连接
-                MyLog.i("连接主动断开: " + connectUntil + "  thread name: " + Thread.currentThread().getName());
+                MyLog.i("连接主动断开: " +  "  thread name: " + Thread.currentThread().getName());
                 startClient();
-                //connectUntil.start();
             }
 
             @Override

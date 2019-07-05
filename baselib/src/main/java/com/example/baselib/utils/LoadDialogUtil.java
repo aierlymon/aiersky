@@ -18,42 +18,55 @@ public class LoadDialogUtil {
     private WeakReference<Activity> weakReference;
     private CustomDialog loadDialog;
 
-    static LoadDialogUtil loadDialogUtil;
+    private static LoadDialogUtil loadDialogUtil;
+    private Activity mContext;
+    private String msg;
+    private int theme;//加载展示的
 
-    public static LoadDialogUtil getInstance() {
+    /**
+     *
+     * @param mContext 上下文（只能传activity不能传application，不会内存泄漏）
+     * @param msg //加载展示的文字内容
+     * @param theme //加载图标的主题
+     * @return
+     */
+    public static LoadDialogUtil getInstance(Activity mContext,String msg,int theme) {
         if (loadDialogUtil == null) {
             loadDialogUtil = new LoadDialogUtil();
         }
+        loadDialogUtil.mContext = mContext;
+        loadDialogUtil.msg=msg;
+        loadDialogUtil.theme=theme;
         return loadDialogUtil;
     }
 
-    public CustomDialog getLoadDialog(Activity context) {
-        weakReference=new WeakReference<>(context);
-        CustomDialog.Builder builder = new CustomDialog.Builder(weakReference.get());
-        builder.setMessage("正在加载");
-        if(loadDialog!=null){
-            loadDialog.hide();
-            loadDialog=null;
+    public void getLoadDialog() {
+        if (loadDialog != null) {
+            cancel();
+            loadDialog = null;
         }
+        weakReference = new WeakReference<>(mContext);
+        CustomDialog.Builder builder = new CustomDialog.Builder(weakReference.get());
+        builder.setMessage(msg);
+        builder.setTheme(theme);
         loadDialog = builder.create();
         loadDialog.setCanceledOnTouchOutside(false);
-        return loadDialog;
     }
 
-    public void show(){
-        if(loadDialog!=null){
+    public void show() {
+        getLoadDialog();
+        if (loadDialog != null) {
             loadDialog.show();
         }
     }
 
-    public void cancel(){
-        if(loadDialog!=null){
+    public void cancel() {
+        if (loadDialog != null) {
             loadDialog.cancel();
-            loadDialog=null;
+            loadDialog = null;
             weakReference.clear();
-            weakReference=null;
+            weakReference = null;
         }
     }
-
 
 }

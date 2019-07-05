@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.baselib.base.BaseMvpTitleActivity;
 import com.example.baselib.utils.LoadDialogUtil;
 import com.example.baselib.utils.MyLog;
+import com.example.baselib.widget.CustomDialog;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
@@ -67,6 +68,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         mWSHandler = new WSHandler(this);
         registe();
 
+        LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.Pulse).show();
+
       /*  TestManager manager = TestManager.getInstance(this);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gl);
         manager.test(bitmap);*/
@@ -78,7 +81,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
             @Override
             public void onNetWorkSuccess() {
                 //可以请求tcp网络重连
-                MyLog.i("检测到网络切换恢复: "+Thread.currentThread().getName());
+                MyLog.i("检测到网络切换恢复: " + Thread.currentThread().getName());
                 //  mPresenter.startClient();
             }
 
@@ -99,7 +102,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     @Override
     protected void startRequest() {
         //开始tcp连接
-        mPresenter.startClient();
+        //  mPresenter.startClient();
 
         //开启ws
         myHandlerWebSocketThread = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
@@ -119,12 +122,12 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     @Override
     public void showLoading() {
-        LoadDialogUtil.getInstance().getLoadDialog(this).show();
+        LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.DoubleBounce).show();
     }
 
     @Override
     public void hideLoading() {
-        LoadDialogUtil.getInstance().getLoadDialog(this).cancel();
+        LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.DoubleBounce).cancel();
     }
 
 

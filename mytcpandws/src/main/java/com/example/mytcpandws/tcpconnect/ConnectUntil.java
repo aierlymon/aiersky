@@ -115,7 +115,7 @@ public class ConnectUntil {
         void onConnect(ConnectUntil connectUntil);
 
         //连接被断开
-        void onDisConnect(ConnectUntil connectUntil);
+        void onDisConnect();
 
         //连接失败，无法找到主机
         void onConnectFail(ConnectUntil connectUntil);
@@ -153,7 +153,7 @@ public class ConnectUntil {
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
             super.channelInactive(ctx);
             //当连接断开的时候
-            reciveMsgListener.onDisConnect(ConnectUntil.this);
+            reciveMsgListener.onDisConnect();
         }
 
 
