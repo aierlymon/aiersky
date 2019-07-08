@@ -30,7 +30,7 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
     private String ip;
     private int port;
     private ConnectUntil mConnectUntil;
-    private StringBuilder mProgressBuild=new StringBuilder();
+    private StringBuilder mProgressBuild = new StringBuilder();
 
     public interface OnConnectStateChangeListener {
         void onConnect(ConnectUntil connectUntil);
@@ -56,21 +56,38 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
     }
 
 
-    public void send(String msg) {
-        mProgressBuild.delete(0,mProgressBuild.length());
+    public void sendString(String msg) {
+        mProgressBuild.delete(0, mProgressBuild.length());
         Message message = Message.obtain();
-        message.what = TcpConnectHandler.SEND;
+        message.what = TcpConnectHandler.SENDSTRING;
         Bundle bundle = new Bundle();
         bundle.putString(SEND, msg);
         message.setData(bundle);
-        if (mConnectHandler != null){
+        if (mConnectHandler != null) {
             mProgressBuild.append("准备发送就绪->");
             mConnectHandler.sendMessage(message);
-        }else{
+        } else {
             mProgressBuild.append("->还在连接服务器呢，通道都还没有生成,等下再发送吧亲<-");
             mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
         }
     }
+
+    public void sendBytes(byte[] msg) {
+        mProgressBuild.delete(0, mProgressBuild.length());
+        Message message = Message.obtain();
+        message.what = TcpConnectHandler.SENDBYTES;
+        Bundle bundle = new Bundle();
+        bundle.putByteArray(SEND, msg);
+        message.setData(bundle);
+        if (mConnectHandler != null) {
+            mProgressBuild.append("准备发送就绪->");
+            mConnectHandler.sendMessage(message);
+        } else {
+            mProgressBuild.append("->还在连接服务器呢，通道都还没有生成,等下再发送吧亲<-");
+            mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
+        }
+    }
+
 
     @Override
     public void run() {
@@ -88,23 +105,23 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
     @Override
     public void onRecive(ConnectUntil connectUntil, byte[] msg) {
         String info = new String(msg, 0, msg.length);
-        statechange(TCP_HANDLE_RECEIVE,connectUntil,info);
+        statechange(TCP_HANDLE_RECEIVE, connectUntil, info);
     }
 
     @Override
     public void onConnect(ConnectUntil connectUntil) {
-        statechange(TCP_HANDLE_CONNECT_SUCCESS,connectUntil,null);//连接成功
+        statechange(TCP_HANDLE_CONNECT_SUCCESS, connectUntil, null);//连接成功
     }
 
     @Override
     public void onDisConnect() {
         closeClient();
-        statechange(TCP_HANDLE_CONNECT_BREAK,null,null);//连接断开
+        statechange(TCP_HANDLE_CONNECT_BREAK, null, null);//连接断开
     }
 
     @Override
     public void onConnectFail(ConnectUntil connectUntil) {
-        statechange(TCP_HANDLE_CONNECT_ERROR,connectUntil,null);//无法连接主机
+        statechange(TCP_HANDLE_CONNECT_ERROR, connectUntil, null);//无法连接主机
     }
 
     //停止层触发的一些其他操作,比如无限重连
@@ -137,45 +154,56 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
 
     //关闭线程的方法，关闭了线程就结束了
     public void closeClient() {
-        MyLog.i("closeClient");
         if (mConnectHandler != null)
             mConnectHandler.sendEmptyMessage(TcpConnectHandler.CLOSE);
     }
 
 
     class TcpConnectHandler extends Handler {
-        public static final int SEND = 0x01;//发送指令
-        public static final int CLOSE = 0x02;//发送指令
+        public static final int SENDSTRING = 0x01;//发送指令
+        public static final int SENDBYTES = 0x02;//发送指令
+        public static final int CLOSE = 0x03;//发送指令
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case SEND:
+                case SENDSTRING:
                     String info = msg.getData().getString(TCPParams.SEND);
-                    if (mConnectUntil != null && mConnectUntil.isActive()){
-                        try {
-                           int state= mConnectUntil.send(info.getBytes("utf-8"));
-                           if(state==ConnectUntilBox.SendSuccess){
-                               mProgressBuild.append("恭喜你，发送成功 sucess!!");
-                           }else{
-                               mProgressBuild.append("很可惜，通道在准备发送的时候关闭了，数据发送不出");
-                           }
-                            mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                    if (mConnectUntil != null && mConnectUntil.isActive()) {
+                        int state = mConnectUntil.send(info);
+                        if (state == ConnectUntilBox.SendSuccess) {
+                            mProgressBuild.append("恭喜你，发送成功 sucess!!");
+                        } else {
+                            mProgressBuild.append("很可惜，通道在准备发送的时候关闭了，数据发送不出");
                         }
-                    }else{
+                        mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
+                    } else {
                         mProgressBuild.append("tcp突然就关闭了，你的数据发送不出去了");
                         mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
                     }
 
                     break;
+                case SENDBYTES:
+                    byte[] info_bytes = msg.getData().getByteArray(TCPParams.SEND);
+                    if (mConnectUntil != null && mConnectUntil.isActive()) {
+                        int state = mConnectUntil.send(info_bytes);
+                        if (state == ConnectUntilBox.SendSuccess) {
+                            mProgressBuild.append("恭喜你，发送成功 sucess!!");
+                        } else {
+                            mProgressBuild.append("很可惜，通道在准备发送的时候关闭了，数据发送不出");
+                        }
+                        mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
+                    } else {
+                        mProgressBuild.append("tcp突然就关闭了，你的数据发送不出去了");
+                        mConnectStateChangeListener.onProgressLog(mProgressBuild.toString());
+                    }
+                    break;
                 case CLOSE:
-                    if(mConnectUntil!=null){
+                    if (mConnectUntil != null) {
                         mConnectUntil.closeClient();
                     }
-                    ConnectUntilBox.getMap().remove(ip+":"+port);
+                    ConnectUntilBox.getMap().remove(ip + ":" + port);
 
                     mConnectHandler.removeCallbacksAndMessages(null);
                     mConnectHandler = null;
@@ -190,8 +218,8 @@ public class ConnectThread extends Thread implements ConnectUntil.ReciveMsgListe
         }
     }
 
-    public boolean isActive(){
-        if(mConnectUntil==null)return false;
+    public boolean isActive() {
+        if (mConnectUntil == null) return false;
         return mConnectUntil.isActive();
     }
 

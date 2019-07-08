@@ -42,8 +42,6 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
     protected abstract int getLayoutRes();
 
-   //开始请求(在初始化试图之后执行)
-   protected abstract void startRequest();
 
    //是否使用事件总线
    public boolean isUseEventBus(){return false;};
@@ -66,7 +64,6 @@ public abstract class BaseActivity extends AppCompatActivity  {
             EventBus.getDefault().register(this);
         }
         initView();
-        startRequest();
     }
 
     //获取RxPermissions,进行权限的动态设置

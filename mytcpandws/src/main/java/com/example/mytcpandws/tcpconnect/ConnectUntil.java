@@ -73,11 +73,21 @@ public class ConnectUntil {
 
 
     public int send(byte[] bys) {
-        Log.i("mylog", "send: "+Thread.currentThread().getName());
         if (channel != null && channel.isOpen() && channel.isWritable()) {
             ByteBuf byteBuf = channel.alloc().buffer();
             byteBuf.resetWriterIndex();
             byteBuf.writeBytes(bys);
+            channel.writeAndFlush(byteBuf);
+            return ConnectUntilBox.SendSuccess;
+        }
+        return ConnectUntilBox.Fail;
+    }
+
+    public int send(String msg){
+        if (channel != null && channel.isOpen() && channel.isWritable()) {
+            ByteBuf byteBuf = channel.alloc().buffer();
+            byteBuf.resetWriterIndex();
+            byteBuf.writeCharSequence(msg, Charset.forName("gbk"));
             channel.writeAndFlush(byteBuf);
             return ConnectUntilBox.SendSuccess;
         }
@@ -94,7 +104,7 @@ public class ConnectUntil {
 
     protected void closeClient() {
         ConnectUntilBox.getMap().put(ip + ":" + port, this);
-        if (channel != null) {
+        if (channel != null&&channel.isRegistered()) {
             channel.closeFuture();
             channelFuture.channel().close();
         }

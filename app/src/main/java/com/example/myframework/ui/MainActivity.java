@@ -16,9 +16,9 @@ import com.example.baselib.utils.LoadDialogUtil;
 import com.example.baselib.utils.MyLog;
 import com.example.baselib.widget.CustomDialog;
 import com.example.myframework.R;
-import com.example.myframework.broadcast.NetWorkStateBroadcast;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
+import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
 import com.example.mytcpandws.params.WSParams;
 import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
 import com.example.mytcpandws.tcpconnect.TcpClient;
@@ -66,8 +66,12 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         ButterKnife.bind(this);
         tx.setText("你好");
 
-        mWSHandler = new WSHandler(this);
         registe();
+
+
+        mWSHandler = new WSHandler(this);
+
+
 
         LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.Pulse).show();
 
@@ -81,16 +85,22 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         netWorkStateBroadcast.setmOnNetStateChangListener(new NetWorkStateBroadcast.OnNetStateChangListener() {
             @Override
             public void onNetWorkSuccess() {
-                //可以请求tcp网络重连
-                MyLog.i("检测到网络切换恢复: " + Thread.currentThread().getName());
-                //  mPresenter.startClient();
+
+                //开启ws
+                myHandlerWebSocketThread = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
+
+                for (int i = 8; i < 16; i++) {
+                    TcpClient tcpClient = new TcpClient("192.168.80." + i, 8085, true, true);
+                    tcpClient.connect();
+                }
+                tcpClient = new TcpClient("192.168.1.103", 8085, true, true);
+                tcpClient.connect();
             }
 
             @Override
             public void onNetWorkFail() {
-                //可以关闭tcp网络
-                MyLog.i("检测到网络切换中");
-                //   mPresenter.closeTcp();
+                //断网要清空全部连接
+                ConnectUntilBox.closeAllContainGroup(true);
             }
         });
         IntentFilter filter = new IntentFilter();
@@ -101,19 +111,6 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
     private TcpClient tcpClient;
-    @Override
-    protected void startRequest() {
-        for(int i=8;i<16;i++){
-            TcpClient tcpClient=new TcpClient("192.168.80."+i,8085,true,true);
-            tcpClient.connect();
-        }
-        tcpClient= new TcpClient("192.168.80.1",8085,true,true);
-        tcpClient.connect();
-
-        //开启ws
-        myHandlerWebSocketThread = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
-        // myHandlerWebSocketThread.start();
-    }
 
 
     @Override
@@ -154,7 +151,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 mPresenter.success("Hello World");
                 break;
             case R.id.tcp_btn:
-                tcpClient.send("你好");
+                tcpClient.sendBytes("你好".getBytes());
                 send_data.setText("Hello Java");//这个意思一下= =
                 break;
             case R.id.ws_btn:
@@ -164,7 +161,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
             case R.id.btn_intent:
                 Intent intent = new Intent(MainActivity.this, SecondActivivty.class);
                 startActivity(intent);
-              //  finish();
+                //  finish();
                 break;
         }
 

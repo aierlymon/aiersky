@@ -1,8 +1,7 @@
 package com.example.mytcpandws.tcpconnect;
 
+import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
 import com.example.mytcpandws.utils.MyLog;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * createBy ${huanghao}
@@ -38,12 +37,7 @@ public class TcpClient {
         connectThread = new ConnectThread(ip, port, new ConnectThread.OnConnectStateChangeListener() {
             @Override
             public void onConnect(ConnectUntil connectUntil) {
-                int state = 0;
-                try {
-                    state = connectUntil.send("你好".getBytes("utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                int state = connectUntil.send("你好");
                 MyLog.i("连接上了: " + connectUntil + "  state：  " + state + "  thread name: " + Thread.currentThread().getName());
             }
 
@@ -52,14 +46,14 @@ public class TcpClient {
                 //connectUntil 已经没救了了
                 //连接主动断开，再次启动连接
                 MyLog.i("连接主动断开: " + "  thread name: " + Thread.currentThread().getName());
-                if(mBreakToRestart)
+                if(mBreakToRestart&&NetWorkStateBroadcast.isOnline.get())
                 connect();
             }
 
             @Override
             public void onConnectFail(ConnectUntil connectUntil) {
                 MyLog.i("连接tcp失败，找不到主机,再次连接： " + connectUntil.isActive()+"    mFailToRestart: "+mFailToRestart+"  connectUntil: "+connectUntil);
-                if(mFailToRestart)
+                if(mFailToRestart&&NetWorkStateBroadcast.isOnline.get())
                     connectUntil.restart();
             }
 
@@ -86,13 +80,22 @@ public class TcpClient {
         connect();
     }
 
-    public boolean send(String msg) {
+    public boolean sendString(String msg) {
         if (connectThread != null) {
-            connectThread.send(msg);
+            connectThread.sendString(msg);
             return true;
         }
         return false;
     }
+
+    public boolean sendBytes(byte[] bytes) {
+        if (connectThread != null) {
+            connectThread.sendBytes(bytes);
+            return true;
+        }
+        return false;
+    }
+
 
     public void close() {
         if (connectThread != null) {

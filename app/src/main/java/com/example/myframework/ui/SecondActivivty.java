@@ -13,9 +13,6 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
         return R.layout.activity_main;
     }
 
-    @Override
-    protected void startRequest() {
-    }
 
     @Override
     public void showLoading() {
