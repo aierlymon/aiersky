@@ -84,11 +84,16 @@ ext {
             "bga-zxing"     : "cn.bingoogolapple:bga-zxing:1.1.7@aar"
     ]
 
+    otherWidgets=[
+            "NiceVieoPlayer":"com.github.xiaoyanger0825:NiceVieoPlayer:v2.2"
+    ]
+
 
     supportLibs = supportDeps.values()
     networkLibs = retrofit.values()
     rxJavaLibs = rxJava.values()
     commonLibs = commonDeps.values()
     zxings=zxing.values()
+    otherWidgets=otherWidgets.values()
 
 }

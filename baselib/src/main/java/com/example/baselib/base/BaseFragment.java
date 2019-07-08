@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.baselib.utils.CustomToast;
+import com.example.baselib.utils.LoadDialogUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -46,10 +47,9 @@ abstract class BaseFragment extends Fragment {
     public boolean isUseEventBus(){return false;};
 
     //一些初始化信息，可以被子类重写
-    public void init(){};
 
-    //作为初始化控件
-    void initView(View view){};
+    abstract void init();
+
 
     public  RxPermissions getRxPermissions(){
         if(mRxPermissions==null){
@@ -110,7 +110,6 @@ abstract class BaseFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(getLayoutRes(),container,false);
         unbinder = ButterKnife.bind(this, view);
-        initView(view);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -122,6 +121,8 @@ abstract class BaseFragment extends Fragment {
         if(isUseEventBus()){
             EventBus.getDefault().unregister(this);
         }
+
+
     }
 
     public void showToast(String msg){

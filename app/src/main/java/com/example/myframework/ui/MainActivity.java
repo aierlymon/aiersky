@@ -30,6 +30,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+
+/*
+* 这个activity主要验证的是TCP和WebSocket
+* 的通信
+* */
 public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> implements MainView {
 
 
@@ -93,7 +98,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                     TcpClient tcpClient = new TcpClient("192.168.80." + i, 8085, true, true);
                     tcpClient.connect();
                 }
-                tcpClient = new TcpClient("192.168.1.103", 8085, true, true);
+                tcpClient = new TcpClient("192.168.80.1", 8085, true, true);
                 tcpClient.connect();
             }
 

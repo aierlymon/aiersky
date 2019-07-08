@@ -2,32 +2,38 @@ package com.example.baselib.base;
 
 import com.example.baselib.mvp.IPresenter;
 import com.example.baselib.mvp.IView;
+import com.example.baselib.utils.LoadDialogUtil;
+
 /**
  * createBy ${huanghao}
  * on 2019/6/26
  */
 public abstract class BaseMVPFragment<V extends IView,P extends IPresenter> extends BaseFragment implements IView{
 
-    P mPresenter;
+    public P mPresenter;
 
     protected abstract P createPresenter();
 
+    protected abstract void initData();
 
+    private String title;
 
-    //懒加载
-    @Override
-    protected void lazyLoadData() {
+    public String getTitle() {
+        return title;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     //这个是父类在oncreate调用的方法
     @Override
     public void init() {
-        super.init();//没执行什么要不要无所谓
         mPresenter=createPresenter();
         if(mPresenter!=null){
             mPresenter.attachView((V)this);
         }
+        initData();
     }
 
     @Override
@@ -36,5 +42,11 @@ public abstract class BaseMVPFragment<V extends IView,P extends IPresenter> exte
         if(mPresenter!=null){
             mPresenter.detachView();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        hideLoading();
     }
 }
