@@ -23,5 +23,31 @@ public class FirstFraPresenter extends BasePresenter<FirstFragView> {
         return false;
     }
 
+    public void requestHttp() {
+        getView().showLoading();
+        //Http
+        HttpMethod.getInstance().getCityWeather("101190201")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new MySubscriber<TestBean>(this) {
+                    @Override
+                    public void onSuccess(TestBean testBean) {
+                        List<TestBean> list=new ArrayList<>();
+                        for(int i=0;i<10;i++){
+                            list.add(testBean);
+                        }
+                        getView().refreshUi(list);
+                    }
 
+                    @Override
+                    public void onFail(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        getView().hideLoading();
+                    }
+                });
+    }
 }

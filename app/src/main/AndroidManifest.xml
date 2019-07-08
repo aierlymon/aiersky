@@ -2,32 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myframework">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="com.example.baselib.myapplication.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:networkSecurityConfig="@xml/network_config"
-        android:name="com.example.baselib.myapplication.App"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.MainActivity"
-            android:launchMode="singleTop"
-           >
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
-
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
-        </activity>
-        <activity android:name=".ui.SecondActivivty">
-           <!-- <intent-filter>
+        <activity
+            android:name=".ui.MainActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SecondActivivty">
+            <!-- <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>-->
         </activity>
 
     </application>

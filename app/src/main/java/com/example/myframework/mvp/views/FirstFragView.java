@@ -10,4 +10,5 @@ import java.util.List;
  * on 2019/7/8
  */
 public interface FirstFragView extends IView {
+    void refreshUi(List<TestBean> beanList);
 }

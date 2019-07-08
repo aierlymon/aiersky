@@ -40,6 +40,7 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
     private List<BaseMVPFragment> fragmentList;
 
 
+
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_second;
@@ -49,6 +50,8 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
+
+        mPresenter.requestHttp();
 
         fragmentList = new ArrayList<>();
         fragmentList.add(FirstTabFragment.newInstance("第一页"));
@@ -80,7 +83,7 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
     }
 
     @Override
-    public void refreshUi(List<TestBean> testBeanList) {
+    public void refreshUiForActivity() {
         //这个根据以后布局再定义
     }
 }

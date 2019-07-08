@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.baselib.utils.CustomToast;
-import com.example.baselib.utils.LoadDialogUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -32,7 +31,6 @@ abstract class BaseFragment extends Fragment {
 
     private final int duration=2000;
     private RxPermissions mRxPermissions;
-    private Unbinder unbinder;
 
     private boolean isViewCreated;//视图是否已经创建
     private boolean isUiVisible;//该fragment是否对用户可见
@@ -49,6 +47,11 @@ abstract class BaseFragment extends Fragment {
     //一些初始化信息，可以被子类重写
 
     abstract void init();
+
+     protected abstract void initView();
+
+
+    private Unbinder unbind;
 
 
     public  RxPermissions getRxPermissions(){
@@ -109,19 +112,20 @@ abstract class BaseFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(getLayoutRes(),container,false);
-        unbinder = ButterKnife.bind(this, view);
-        return super.onCreateView(inflater, container, savedInstanceState);
+        unbind=ButterKnife.bind(this,view);
+        initView();
+
+        return view;
     }
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unbinder.unbind();
         if(isUseEventBus()){
             EventBus.getDefault().unregister(this);
         }
-
+        unbind.unbind();
 
     }
 

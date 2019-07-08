@@ -14,7 +14,6 @@ public abstract class BaseMVPFragment<V extends IView,P extends IPresenter> exte
 
     protected abstract P createPresenter();
 
-    protected abstract void initData();
 
     private String title;
 
@@ -33,7 +32,6 @@ public abstract class BaseMVPFragment<V extends IView,P extends IPresenter> exte
         if(mPresenter!=null){
             mPresenter.attachView((V)this);
         }
-        initData();
     }
 
     @Override
