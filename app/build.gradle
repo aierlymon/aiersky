@@ -42,6 +42,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //引用module的butterknife的时候要加这个，不然引用失败
     annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
+    implementation rootProject.ext.otherWidgets
 
     implementation project(':baselib')
     implementation project(path:':mytcpandws')

@@ -67,7 +67,6 @@ public class HttpMethod {
     }
 
     public Observable<TestBean> getCityWeather(String cityId){
-        MyLog.i("getCityWeather: Thread: "+Thread.currentThread().getName());
        return mMovieService.loadDataByRetrofit(cityId);
     }
 }

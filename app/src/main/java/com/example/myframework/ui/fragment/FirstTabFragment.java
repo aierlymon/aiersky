@@ -1,13 +1,14 @@
 package com.example.myframework.ui.fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 
 import com.example.baselib.base.BaseMVPFragment;
-import com.example.baselib.http.bean.TestBean;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.FirstFraPresenter;
 import com.example.myframework.mvp.views.FirstFragView;
+import com.example.myframework.ui.adapter.FragFirstRecyVAdapter;
+import com.example.myframework.ui.adapter.base.BaseMulDataModel;
+import com.example.myframework.ui.widgets.AutoPollRecyclerView;
 import com.example.mytcpandws.utils.MyLog;
 
 import java.util.List;
@@ -18,10 +19,14 @@ import butterknife.BindView;
  * createBy ${huanghao}
  * on 2019/7/8
  */
+
+/*
+* 这个实现的是<!--这个是带有AutoRecyclerView和CoordinatorLayout+AppLayout+CollapsingToolbarLayout的界面-->
+* */
 public class FirstTabFragment extends BaseMVPFragment<FirstFragView, FirstFraPresenter> implements FirstFragView {
 
     @BindView(R.id.recyclerview)
-    RecyclerView recyclerView;
+    AutoPollRecyclerView recyclerView;
 
     public static FirstTabFragment newInstance(String info) {
         FirstTabFragment fragment = new FirstTabFragment();
@@ -57,7 +62,7 @@ public class FirstTabFragment extends BaseMVPFragment<FirstFragView, FirstFraPre
     @Override
     protected void lazyLoadData() {
         mPresenter.requestHttp();
-        MyLog.i("我到了加载网络这里: "+getTitle());
+        MyLog.i("我到了FirstTabFragment的懒加载: "+getTitle());
     }
 
 
@@ -84,7 +89,9 @@ public class FirstTabFragment extends BaseMVPFragment<FirstFragView, FirstFraPre
     }
 
     @Override
-    public void refreshUi(List<TestBean> beanList) {
-
+    public void refreshUi(List<BaseMulDataModel> beanList) {
+        FragFirstRecyVAdapter fragRecyVAdapter=new FragFirstRecyVAdapter(beanList);
+        recyclerView.setAdapter(fragRecyVAdapter);
+        recyclerView.start();
     }
 }

@@ -11,18 +11,22 @@ import com.example.baselib.base.BaseMVPFragment;
 import com.example.baselib.base.BaseMvpActivity;
 import com.example.baselib.http.bean.TestBean;
 import com.example.baselib.utils.LoadDialogUtil;
+import com.example.baselib.utils.MyLog;
 import com.example.baselib.widget.CustomDialog;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.SecondPresenter;
 import com.example.myframework.mvp.views.SecondView;
 import com.example.myframework.ui.adapter.ActSecPagerAdapter;
 import com.example.myframework.ui.fragment.FirstTabFragment;
+import com.example.myframework.ui.fragment.SecondTabFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jzvd.Jzvd;
+import cn.jzvd.JzvdStd;
 
 
 /*
@@ -55,10 +59,16 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
 
         fragmentList = new ArrayList<>();
         fragmentList.add(FirstTabFragment.newInstance("第一页"));
+        fragmentList.add(SecondTabFragment.newInstance("第二页"));
+
+        viewPager.setAdapter(new ActSecPagerAdapter(getSupportFragmentManager(), fragmentList));
+
+
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.removeAllTabs();
         for(int i=0;i<fragmentList.size();i++){
             tabLayout.addTab(tabLayout.newTab().setText(fragmentList.get(i).getTitle()));
         }
-        viewPager.setAdapter(new ActSecPagerAdapter(getSupportFragmentManager(), fragmentList));
     }
 
     @Override
@@ -85,5 +95,18 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
     @Override
     public void refreshUiForActivity() {
         //这个根据以后布局再定义
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Jzvd.backPress()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Jzvd.resetAllVideos();
     }
 }

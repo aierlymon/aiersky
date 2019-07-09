@@ -15,6 +15,7 @@ public abstract class BaseMulViewHolder<T extends BaseMulDataModel> extends Recy
 
     public BaseMulViewHolder(View itemView) {
         super(itemView);
+        //这个不需要unbind只有fragment需要而已
         ButterKnife.bind(this,itemView);
     }
 

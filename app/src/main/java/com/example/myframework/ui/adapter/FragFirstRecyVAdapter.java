@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.myframework.R;
 import com.example.myframework.mvp.models.DataViewModel;
@@ -14,18 +16,20 @@ import com.example.myframework.ui.adapter.base.BaseMulViewHolder;
 
 import java.util.List;
 
+import butterknife.BindView;
+
 /**
  * createBy ${huanghao}
  * on 2019/7/8
  */
-public class FragRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHolder> {
+public class FragFirstRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHolder> {
 
     public static final int TYPE_Title = 1;
     public static final int TYPE_View = 2;
 
     private List<BaseMulDataModel> modelList;
 
-    public FragRecyVAdapter(List<BaseMulDataModel> modelList) {
+    public FragFirstRecyVAdapter(List<BaseMulDataModel> modelList) {
         this.modelList = modelList;
     }
 
@@ -66,7 +70,8 @@ public class FragRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHolder> {
     //泛型是放实体类的
     class TitleViewHolder extends BaseMulViewHolder<TitleModel> {
 
-
+        @BindView(R.id.tx_title)
+        TextView txTitle;
         public TitleViewHolder(View itemView) {
             super(itemView);
 
@@ -74,11 +79,18 @@ public class FragRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHolder> {
 
         @Override
         public void bindData(TitleModel dataModel, int position) {
-
+            txTitle.setText(dataModel.getTitle());
         }
     }
 
     class DataViewViewHolder extends BaseMulViewHolder<DataViewModel>{
+
+        @BindView(R.id.tx_left)
+        TextView txLeft;
+
+        @BindView(R.id.btn_right)
+        Button btnRight;
+
 
         public DataViewViewHolder(View itemView) {
             super(itemView);
@@ -86,7 +98,14 @@ public class FragRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHolder> {
 
         @Override
         public void bindData(DataViewModel dataModel, int position) {
-
+            txLeft.setText(dataModel.getPrduceName());
+            btnRight.setOnClickListener((View view) ->{
+                    dataModel.setPrduceName("我已经触发点击事件了: "+position);
+                    txLeft.setText(dataModel.getPrduceName());
+                }
+            );
         }
+
+
     }
 }

@@ -96,10 +96,10 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
                 for (int i = 8; i < 16; i++) {
                     TcpClient tcpClient = new TcpClient("192.168.80." + i, 8085, true, true);
-                    tcpClient.connect();
+                   // tcpClient.connect();
                 }
                 tcpClient = new TcpClient("192.168.80.1", 8085, true, true);
-                tcpClient.connect();
+               // tcpClient.connect();
             }
 
             @Override

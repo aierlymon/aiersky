@@ -13,6 +13,7 @@ import retrofit2.http.Path;
  */
 public interface MovieService {
 
+    // http://www.weather.com.cn/adat/sk/101190201.html
     //加载天气
     @GET("adat/sk/{cityId}.html")
     Observable<TestBean> loadDataByRetrofit(@Path("cityId") String cityId);

@@ -64,8 +64,6 @@ public class LoadDialogUtil {
         if (loadDialog != null) {
             loadDialog.dismiss();
             loadDialog = null;
-            weakReference.clear();
-            weakReference = null;
         }
     }
 

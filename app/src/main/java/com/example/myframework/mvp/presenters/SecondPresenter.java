@@ -29,7 +29,8 @@ public class SecondPresenter extends BasePresenter<SecondView> {
 
                     @Override
                     public void onFail(Throwable e) {
-
+                        //这个是测试，在公司虚拟机不能联网
+                        getView().hideLoading();
                     }
 
                     @Override
@@ -37,5 +38,6 @@ public class SecondPresenter extends BasePresenter<SecondView> {
                         getView().hideLoading();
                     }
                 });
+        getView().hideLoading();
     }
 }

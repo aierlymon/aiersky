@@ -18,7 +18,8 @@ ext {
             bufferknife             : "8.8.1",
             javawebsocket           : "1.4.0",
             multidex                : "1.0.3",
-            netty                   : "4.1.27.Final"
+            netty                   : "4.1.27.Final",
+            smartrefresh            : "1.0.5"
     ]
 
     supportDeps = [
@@ -46,19 +47,21 @@ ext {
     testDeps = [
             "junit"                    : 'junit:junit:4.12',
             "leakcanary-debug"         : 'com.squareup.leakcanary:leakcanary-android:1.6.1',
-             //no-op是指No Operation Performed，代表不会做任何操作，不会干扰正式用户的使用；
+            //no-op是指No Operation Performed，代表不会做任何操作，不会干扰正式用户的使用；
             "leakcanary-release"       : 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1',
             "leakcanary-debug-fragment": 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1',
 
     ]
 
     commonDeps = [
-            "logger"       : 'com.orhanobut:logger:2.2.0',
-            "glide"        : 'com.github.bumptech.glide:glide:4.8.0',
-            "eventbus"     : 'org.greenrobot:eventbus:3.0.0',
-            "spinkit"      : 'com.github.ybq:Android-SpinKit:1.2.0',
-            "rxpermissions": 'com.github.tbruyelle:rxpermissions:0.10.2',
-            "bufferknife"  : "com.jakewharton:butterknife:${dependVersion.bufferknife}",
+            "logger"             : 'com.orhanobut:logger:2.2.0',
+            "glide"              : 'com.github.bumptech.glide:glide:4.8.0',
+            "eventbus"           : 'org.greenrobot:eventbus:3.0.0',
+            "spinkit"            : 'com.github.ybq:Android-SpinKit:1.2.0',
+            "rxpermissions"      : 'com.github.tbruyelle:rxpermissions:0.10.2',
+            "bufferknife"        : "com.jakewharton:butterknife:${dependVersion.bufferknife}",
+            "smartrefresh-header": "com.scwang.smartrefresh:SmartRefreshHeader:${dependVersion.smartrefresh}",
+            "smartrefresh"       : "com.scwang.smartrefresh:SmartRefreshLayout:${dependVersion.smartrefresh}"
 
     ]
 
@@ -84,8 +87,8 @@ ext {
             "bga-zxing"     : "cn.bingoogolapple:bga-zxing:1.1.7@aar"
     ]
 
-    otherWidgets=[
-            "NiceVieoPlayer":"com.github.xiaoyanger0825:NiceVieoPlayer:v2.2"
+    otherWidgets = [
+            "JiaoZiVideoPlayer": "cn.jzvd:jiaozivideoplayer:7.0.4"
     ]
 
 
@@ -93,7 +96,7 @@ ext {
     networkLibs = retrofit.values()
     rxJavaLibs = rxJava.values()
     commonLibs = commonDeps.values()
-    zxings=zxing.values()
-    otherWidgets=otherWidgets.values()
+    zxings = zxing.values()
+    otherWidgets = otherWidgets.values()
 
 }

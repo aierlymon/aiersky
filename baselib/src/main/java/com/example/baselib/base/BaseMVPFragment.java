@@ -10,6 +10,9 @@ import com.example.baselib.utils.LoadDialogUtil;
  */
 public abstract class BaseMVPFragment<V extends IView,P extends IPresenter> extends BaseFragment implements IView{
 
+
+
+
     public P mPresenter;
 
     protected abstract P createPresenter();
