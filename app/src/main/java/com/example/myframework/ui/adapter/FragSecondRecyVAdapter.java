@@ -8,18 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.myframework.R;
 import com.example.myframework.mvp.models.TitleModel;
 import com.example.myframework.ui.adapter.base.BaseMulDataModel;
 import com.example.myframework.ui.adapter.base.BaseMulViewHolder;
 import com.example.mytcpandws.utils.MyLog;
 
-import java.net.URI;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
 /**
@@ -28,6 +27,7 @@ import cn.jzvd.JzvdStd;
  */
 public class FragSecondRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHolder> {
 
+    private final String url="http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4";
     private List<BaseMulDataModel> list;
     private Context mContext;
 
@@ -72,8 +72,8 @@ public class FragSecondRecyVAdapter extends RecyclerView.Adapter<BaseMulViewHold
         @Override
         public void bindData(TitleModel dataModel, int position) {
             textView.setText(dataModel.getTitle());
-            jzvdStd.setUp("http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4","罗小白架子鼓");
-            jzvdStd.thumbImageView.setImageResource(R.mipmap.ic_launcher);
+            jzvdStd.setUp(url,"罗小白架子鼓");
+            Glide.with(mContext).load(R.mipmap.ic_launcher).into(jzvdStd.thumbImageView);
         }
     }
 
