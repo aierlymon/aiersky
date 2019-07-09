@@ -1,42 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
 
     <!--
     界面居中
-     app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintBottom_toBottomOf="parent"
+
     -->
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/head_tablayout"
+    <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="5dp"
 
         android:background="#0f1"
-        android:visibility="gone"
-
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintHorizontal_bias="0.0"
 
+        app:layout_constraintHeight_percent="0.2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/body_viewpager"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"></LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/main_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+
+        android:background="#00e"
+        app:layout_constraintHeight_percent="0.67"
+
+        app:layout_constraintLeft_toLeftOf="@+id/header"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+
+        app:layout_constraintWidth_percent="0.45"
+
+        ></RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/main_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+
+        android:background="#E9A311"
+        app:layout_constraintHeight_percent="0.67"
+
+        app:layout_constraintRight_toRightOf="@+id/header"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+
+        app:layout_constraintWidth_percent="0.45"
+
+        ></RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#112"
-        android:visibility="gone"
-        app:layout_constraintHeight_percent="0.9"
-        app:layout_constraintTop_toBottomOf="@+id/head_tablayout" />
+        android:layout_margin="5dp"
+
+        android:background="#D80E5F"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"></LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
