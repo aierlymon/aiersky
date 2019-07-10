@@ -1,5 +1,6 @@
 package com.example.myframework.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.example.baselib.base.BaseMvpTitleActivity;
 import com.example.baselib.utils.LoadDialogUtil;
 import com.example.baselib.utils.MyLog;
+import com.example.baselib.utils.RxPermissionUtil;
 import com.example.baselib.widget.CustomDialog;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.MainPresenter;
@@ -38,6 +40,9 @@ import butterknife.OnClick;
 public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> implements MainView {
 
 
+    private String list[]={
+            Manifest.permission.FOREGROUND_SERVICE
+    };
     @BindView(R.id.textview1)
     TextView tx;
 
@@ -79,7 +84,9 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
 
         LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.Pulse).show();
+        RxPermissionUtil.getInstance().permission(this,list);
 
+        //测试单例强引用导致的内存泄漏，测试leakcanary
       /*  TestManager manager = TestManager.getInstance(this);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gl);
         manager.test(bitmap);*/
@@ -92,7 +99,9 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
             public void onNetWorkSuccess() {
 
                 //开启ws
-                myHandlerWebSocketThread = new WebSocketThread<>("121.40.165.18", 8800, mWSHandler);
+                myHandlerWebSocketThread = new WebSocketThread<>("192.168.6.149", 8008, mWSHandler);
+                myHandlerWebSocketThread.start();
+
 
                 for (int i = 8; i < 16; i++) {
                     TcpClient tcpClient = new TcpClient("192.168.80." + i, 8085, true, true);

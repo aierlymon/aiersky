@@ -20,6 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+#这个是JZVIDEOPlay的规则保持
 -keep public class cn.jzvd.JZMediaSystem {*; }
 -keep public class cn.jzvd.demo.CustomMedia.CustomMedia {*; }
 -keep public class cn.jzvd.demo.CustomMedia.JZMediaIjk {*; }

@@ -92,6 +92,6 @@ public class FirstTabFragment extends BaseMVPFragment<FirstFragView, FirstFraPre
     public void refreshUi(List<BaseMulDataModel> beanList) {
         FragFirstRecyVAdapter fragRecyVAdapter=new FragFirstRecyVAdapter(beanList);
         recyclerView.setAdapter(fragRecyVAdapter);
-        recyclerView.start();
+       // recyclerView.start();
     }
 }
