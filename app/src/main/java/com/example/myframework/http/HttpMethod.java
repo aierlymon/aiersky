@@ -1,9 +1,9 @@
-package com.example.baselib.http;
+package com.example.myframework.http;
 
 import com.example.baselib.BuildConfig;
-import com.example.baselib.http.bean.TestBean;
-import com.example.baselib.http.interrceptorebean.LoggingInterceptor;
-import com.example.baselib.utils.MyLog;
+import com.example.myframework.http.bean.TestBean;
+import com.example.myframework.http.bean.UpdateBean;
+import com.example.myframework.http.interrceptorebean.LoggingInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.baselib.http.HttpConstant.DEFAULT_TIME_OUT;
+import static com.example.myframework.http.HttpConstant.DEFAULT_TIME_OUT;
 
 /**
  * createBy ${huanghao}
@@ -68,5 +68,9 @@ public class HttpMethod {
 
     public Observable<TestBean> getCityWeather(String cityId){
        return mMovieService.loadDataByRetrofit(cityId);
+    }
+
+    public Observable<UpdateBean> checkUpdate(){
+        return mMovieService.checkUpdate();
     }
 }

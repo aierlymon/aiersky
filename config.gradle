@@ -61,8 +61,7 @@ ext {
             "rxpermissions"      : 'com.github.tbruyelle:rxpermissions:0.10.2',
             "bufferknife"        : "com.jakewharton:butterknife:${dependVersion.bufferknife}",
             "smartrefresh-header": "com.scwang.smartrefresh:SmartRefreshHeader:${dependVersion.smartrefresh}",
-            "smartrefresh"       : "com.scwang.smartrefresh:SmartRefreshLayout:${dependVersion.smartrefresh}"
-
+            "smartrefresh"       : "com.scwang.smartrefresh:SmartRefreshLayout:${dependVersion.smartrefresh}",
     ]
 
     annotationProcessorList = [

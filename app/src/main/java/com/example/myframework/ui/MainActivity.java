@@ -41,7 +41,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
 
     private String list[]={
-            Manifest.permission.FOREGROUND_SERVICE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     @BindView(R.id.textview1)
     TextView tx;
@@ -83,7 +84,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
 
 
-        LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.Pulse).show();
+        //LoadDialogUtil.getInstance(this, "正在加载", CustomDialog.Pulse).show();
         RxPermissionUtil.getInstance().permission(this,list);
 
         //测试单例强引用导致的内存泄漏，测试leakcanary
@@ -158,7 +159,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         showToast(a);
     }
 
-    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn, R.id.btn_intent})
+    @OnClick({R.id.btn, R.id.tcp_btn, R.id.ws_btn, R.id.btn_intent,R.id.btn_third})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn:
@@ -176,6 +177,10 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 Intent intent = new Intent(MainActivity.this, SecondActivivty.class);
                 startActivity(intent);
                 //  finish();
+                break;
+            case R.id.btn_third:
+                Intent intent3 = new Intent(MainActivity.this, ThirdActivity.class);
+                startActivity(intent3);
                 break;
         }
 

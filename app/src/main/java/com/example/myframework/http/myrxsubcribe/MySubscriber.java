@@ -1,4 +1,4 @@
-package com.example.baselib.http.myrxsubcribe;
+package com.example.myframework.http.myrxsubcribe;
 
 
 import com.example.baselib.mvp.BasePresenter;

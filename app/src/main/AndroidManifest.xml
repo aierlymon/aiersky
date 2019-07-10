@@ -26,7 +26,7 @@
         <activity android:name=".ui.SecondActivivty"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait"></activity>
-
+        <activity android:name=".ui.ThirdActivity"></activity>
 
     </application>
 

@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.baselib.base.BaseMVPFragment;
-import com.example.baselib.http.bean.TestBean;
 
 import java.util.List;
 

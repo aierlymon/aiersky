@@ -1,8 +1,8 @@
 package com.example.myframework.mvp.presenters;
 
-import com.example.baselib.http.HttpMethod;
-import com.example.baselib.http.bean.TestBean;
-import com.example.baselib.http.myrxsubcribe.MySubscriber;
+import com.example.myframework.http.HttpMethod;
+import com.example.myframework.http.bean.TestBean;
+import com.example.myframework.http.myrxsubcribe.MySubscriber;
 import com.example.baselib.mvp.BasePresenter;
 import com.example.myframework.mvp.views.SecondView;
 

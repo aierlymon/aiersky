@@ -1,13 +1,12 @@
 package com.example.myframework.mvp.presenters;
 
-import com.example.baselib.http.HttpMethod;
-import com.example.baselib.http.bean.TestBean;
-import com.example.baselib.http.myrxsubcribe.MySubscriber;
+import com.example.myframework.http.HttpMethod;
+import com.example.myframework.http.bean.TestBean;
+import com.example.myframework.http.myrxsubcribe.MySubscriber;
 import com.example.baselib.mvp.BasePresenter;
 import com.example.myframework.mvp.models.DataViewModel;
 import com.example.myframework.mvp.models.TitleModel;
 import com.example.myframework.mvp.views.FirstFragView;
-import com.example.myframework.mvp.views.TestFraView;
 import com.example.myframework.ui.adapter.base.BaseMulDataModel;
 
 import java.util.ArrayList;

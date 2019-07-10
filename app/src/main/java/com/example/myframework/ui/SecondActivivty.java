@@ -3,15 +3,11 @@ package com.example.myframework.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.widget.ProgressBar;
 
 import com.example.baselib.base.BaseMVPFragment;
 import com.example.baselib.base.BaseMvpActivity;
-import com.example.baselib.http.bean.TestBean;
 import com.example.baselib.utils.LoadDialogUtil;
-import com.example.baselib.utils.MyLog;
 import com.example.baselib.widget.CustomDialog;
 import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.SecondPresenter;
@@ -26,7 +22,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzvd.Jzvd;
-import cn.jzvd.JzvdStd;
 
 
 /*

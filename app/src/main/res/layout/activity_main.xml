@@ -51,6 +51,12 @@
         android:layout_height="wrap_content"
         android:text="跳转页面"/>
 
+    <Button
+        android:id="@+id/btn_third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转到更新页面"/>
+
 
 
 </LinearLayout>

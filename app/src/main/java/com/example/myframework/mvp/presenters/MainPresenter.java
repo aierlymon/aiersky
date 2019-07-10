@@ -1,13 +1,11 @@
 package com.example.myframework.mvp.presenters;
 
-import com.example.baselib.http.HttpMethod;
-import com.example.baselib.http.bean.TestBean;
-import com.example.baselib.http.myrxsubcribe.MySubscriber;
+import com.example.myframework.http.HttpMethod;
+import com.example.myframework.http.bean.TestBean;
+import com.example.myframework.http.myrxsubcribe.MySubscriber;
 import com.example.baselib.mvp.BasePresenter;
 import com.example.baselib.utils.MyLog;
 import com.example.myframework.mvp.views.MainView;
-import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
-import com.example.mytcpandws.tcpconnect.TcpClient;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
