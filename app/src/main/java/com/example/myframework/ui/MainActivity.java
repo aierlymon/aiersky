@@ -42,7 +42,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
 
     private String list[]={
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.REQUEST_INSTALL_PACKAGES
     };
     @BindView(R.id.textview1)
     TextView tx;

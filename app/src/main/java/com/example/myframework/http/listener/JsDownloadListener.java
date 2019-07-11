@@ -1,5 +1,7 @@
 package com.example.myframework.http.listener;
 
+import android.content.Intent;
+
 /**
  * createBy ${huanghao}
  * on 2019/7/10
@@ -7,6 +9,6 @@ package com.example.myframework.http.listener;
 public interface JsDownloadListener {
     void onStartDownload(long length);
     void onProgress(int progress);
-    void onFail(String errorInfo);
-    void onDownSuccess(String apkPath,String apkName);
+    void onFail(int errorType,String errorInfo);
+    void onDownSuccess(Intent intent);
 }

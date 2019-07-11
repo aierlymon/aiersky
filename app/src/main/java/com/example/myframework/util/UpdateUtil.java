@@ -5,8 +5,12 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 
 import com.example.baselib.utils.CipherUtils;
 import com.example.baselib.utils.MyLog;
@@ -41,13 +45,19 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
  * on 2019/7/10
  */
 public class UpdateUtil implements LifecycleObserver {
+    public static final int FILE_NOTFOUND_ERROR=0x01;
+    public static final int FILE_IO_ERROR=0x02;
+    public static final int FILE_MD5_ERROR=0x03;
+    public static final int FILE_DOWNLOAD_ERROR=0x04;
 
     private Context context;
     private Retrofit retrofit;
     private JsDownloadListener jsDownloadListener;
+    private List<Disposable> disposableList;
     public UpdateUtil(Context context, JsDownloadListener jsDownloadListener) {
         this.jsDownloadListener=jsDownloadListener;
         this.context = context.getApplicationContext();
+        disposableList=new ArrayList<>();
         //定义下载client
         JsDownloadInterceptor mInterceptor = new JsDownloadInterceptor(jsDownloadListener);
         OkHttpClient httpClient = new OkHttpClient.Builder()
@@ -67,7 +77,6 @@ public class UpdateUtil implements LifecycleObserver {
 
     private UpdateDialog builder;
 
-    private List<Disposable> disposableList = new ArrayList<>();
 
     public boolean checkUpdate() {
         HttpMethod.getInstance().checkUpdate()
@@ -92,7 +101,7 @@ public class UpdateUtil implements LifecycleObserver {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        clearDisposable();
                     }
 
                     @Override
@@ -141,9 +150,12 @@ public class UpdateUtil implements LifecycleObserver {
             fos.close();
 
         } catch (FileNotFoundException e) {
-            jsDownloadListener.onFail("FileNotFoundException");
+            clearDisposable();
+            jsDownloadListener.onFail(FILE_NOTFOUND_ERROR,"FileNotFoundException");
         } catch (IOException e) {
-            jsDownloadListener.onFail("IOException");
+            MyLog.i("写入数据异常");
+            clearDisposable();
+            jsDownloadListener.onFail(FILE_IO_ERROR,"IOException");
         }
 
     }
@@ -174,7 +186,7 @@ public class UpdateUtil implements LifecycleObserver {
                     download(updateBean.getApkUrl(), file, new Observer() {
                         @Override
                         public void onSubscribe(Disposable d) {
-
+                            disposableList.add(d);
                         }
 
                         @Override
@@ -186,15 +198,34 @@ public class UpdateUtil implements LifecycleObserver {
                             if(updateBean.getNew_md5().equals(down_md5)){
                                 //跳转安装apk
                                 MyLog.i("md5校验成功");
-                                jsDownloadListener.onDownSuccess(getApkPath(),updateBean.getApk_name());
+                                //跳转启动apk有问题
+                                //判读版本是否在7.0以上
+                                File file = new File(getApkPath(), updateBean.getApk_name());
+                                com.example.mytcpandws.utils.MyLog.i("file存在吗: "+file.exists());
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                //判读版本是否在7.0以上
+                                if (Build.VERSION.SDK_INT >= 24) {
+                                    //provider authorities
+                                    Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName()+".fileprovider", file);
+                                    //Granting Temporary Permissions to a URI
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                    intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                                } else {
+                                    intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                                }
+                                jsDownloadListener.onDownSuccess(intent);
                             }else{
-                                jsDownloadListener.onFail("下载的文件的md5值不一样，请重新下载");
+                                MyLog.i("md5校验失败");
+                                clearDisposable();
+                                jsDownloadListener.onFail(FILE_MD5_ERROR,"下载的文件的md5值不一样，请重新下载");
                             }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            jsDownloadListener.onFail(e.getMessage());
+                            MyLog.i("连接资源失败了");
+                            clearDisposable();
+                            jsDownloadListener.onFail(FILE_DOWNLOAD_ERROR,e.getMessage());
                         }
 
                         @Override
@@ -221,12 +252,23 @@ public class UpdateUtil implements LifecycleObserver {
             directoryPath =Environment.getExternalStorageDirectory().getPath();
         }else{//没外部存储就使用内部存储
             MyLog.i("路径: "+context.getFilesDir());
-            directoryPath=context.getFilesDir()+File.separator+"apk";
+            directoryPath=context.getFilesDir()+File.separator;
         }
         File file = new File(directoryPath);
         if(!file.exists()){//判断文件目录是否存在
             file.mkdirs();
         }
         return directoryPath;
+    }
+
+    public void clearDisposable(){
+        if(disposableList!=null&&disposableList.size()>0){
+            for(Disposable disposable :disposableList){
+                if(disposable != null && !disposable.isDisposed()){
+                    disposable.dispose();
+                }
+            }
+        }
+
     }
 }
