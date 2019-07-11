@@ -55,6 +55,11 @@ public class JsResponseBody extends ResponseBody {
                         downloadListener.onProgress((int) (totalBytesRead * 100 / responseBody.contentLength()));
                     }
                 }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 return bytesRead;
             }
         };

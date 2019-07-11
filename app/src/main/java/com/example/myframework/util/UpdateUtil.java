@@ -176,7 +176,7 @@ public class UpdateUtil implements LifecycleObserver {
         context = null;
     }
 
-    public void showDialog(Context context, UpdateBean updateBean) {
+    private void showDialog(Context context, UpdateBean updateBean) {
         builder = UpdateDialog.Builder(context)
                 .setTitle("是否更新到版本: " + updateBean.getVersionName())
                 .setMessage("更新内容为" + updateBean.getUpdateLog() + "\r\n" + "更新大小为: " + updateBean.getTarget_size())
@@ -243,6 +243,8 @@ public class UpdateUtil implements LifecycleObserver {
                 })
                 .build();
         builder.shown();
+
+
     }
 
     private String getApkPath() {
