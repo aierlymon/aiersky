@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.example.myframework.http.bean.UpdateBean;
 import com.example.myframework.http.listener.JsDownloadListener;
@@ -32,7 +33,12 @@ public class ThirdActivity extends AppCompatActivity {
 
             @Override
             public void onFail(int errorType,String errorInfo) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ThirdActivity.this, "检测下载失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
