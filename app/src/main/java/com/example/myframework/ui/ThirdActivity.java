@@ -9,9 +9,10 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-import com.example.myframework.http.bean.UpdateBean;
-import com.example.myframework.http.listener.JsDownloadListener;
-import com.example.myframework.util.UpdateUtil;
+import com.example.baselib.http.bean.UpdateBean;
+import com.example.baselib.http.listener.JsDownloadListener;
+import com.example.baselib.utils.UpdateUtil;
+import com.example.myframework.http.MyHttpMethods;
 import com.example.mytcpandws.utils.MyLog;
 
 /**
@@ -25,34 +26,29 @@ public class ThirdActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         updateUtil = new UpdateUtil(this, new JsDownloadListener() {
             @Override
             public void onStartDownload(long length) {
                 MyLog.i("我已经来到了开始下载了");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pd = new ProgressDialog(ThirdActivity.this);
-                        pd.setOnKeyListener((dialog, keyCode, event) -> {
-                            if (keyCode == KeyEvent.KEYCODE_SEARCH) {
-                                return true;
-                            } else {
-                                return false; //默认返回 false
-                            }
-                        });
-                        pd.setTitle("请稍等");
-                        //设置对话进度条样式为水平
-                        pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                        //设置提示信息
-                        pd.setMessage("正在玩命下载中......");
-                        //设置对话进度条显示在屏幕顶部（方便截图）
-                        pd.getWindow().setGravity(Gravity.CENTER);
-                        pd.setCancelable(false);
-                        pd.setMax(100);
-                        pd.show();//调用show方法显示进度条对话框
-                    }
+                runOnUiThread(() -> {
+                    pd = new ProgressDialog(ThirdActivity.this);
+                    pd.setOnKeyListener((dialog, keyCode, event) -> {
+                        if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+                            return true;
+                        } else {
+                            return false; //默认返回 false
+                        }
+                    });
+                    pd.setTitle("请稍等");
+                    //设置对话进度条样式为水平
+                    pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    //设置提示信息
+                    pd.setMessage("正在玩命下载中......");
+                    //设置对话进度条显示在屏幕顶部（方便截图）
+                    pd.getWindow().setGravity(Gravity.CENTER);
+                    pd.setCancelable(false);
+                    pd.setMax(100);
+                    pd.show();//调用show方法显示进度条对话框
                 });
 
             }
@@ -84,14 +80,16 @@ public class ThirdActivity extends AppCompatActivity {
 
         UpdateBean updateBean = new UpdateBean();
         updateBean.setApk_name("jiaz.apk");
-        updateBean.setApkUrl("http://192.168.43.90:8080/jiaz.apk");
+        updateBean.setApkUrl("http://192.168.1.100:8080/jiaz.apk");
         updateBean.setVersionCode(2);
         updateBean.setNew_md5("aa9df1b8cf3cd44e58465b1d4545360b");
         updateBean.setTarget_size("5M");
         updateBean.setVersionName("1.0.0");
         updateBean.setUpdateLog("测试用例");
 
-        updateUtil.checkUpdate();
+        updateUtil.testUpdate(this,updateBean);
+       // updateUtil.checkUpdate(MyHttpMethods.getInstance());
+
         //测试的时候把方法设置为public
         //updateUtil.showDialog(this, updateBean);
     }

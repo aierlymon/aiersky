@@ -1,5 +1,7 @@
 package com.example.baselib.mvp;
 
+import android.content.Context;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
@@ -13,6 +15,7 @@ import io.reactivex.disposables.Disposable;
  *   ps:在这里添加eventbus是了以后再实现presenter那里可以进行数据传递
  */
 public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
+
 
 
     //视图接口类
@@ -48,7 +51,7 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
     }
 
     public void unDispose(){
-        if(mCompositeDisposable!=null){
+        if(mCompositeDisposable!=null&&mCompositeDisposable.size()>0){
             mCompositeDisposable.clear();
             mCompositeDisposable=null;
         }

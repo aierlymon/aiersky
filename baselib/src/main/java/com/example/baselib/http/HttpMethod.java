@@ -1,9 +1,9 @@
-package com.example.myframework.http;
+package com.example.baselib.http;
 
 import com.example.baselib.BuildConfig;
-import com.example.myframework.http.bean.TestBean;
-import com.example.myframework.http.bean.UpdateBean;
-import com.example.myframework.http.interrceptorebean.LoggingInterceptor;
+import com.example.baselib.http.bean.TestBean;
+import com.example.baselib.http.bean.UpdateBean;
+import com.example.baselib.http.interrceptorebean.LoggingInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,24 +14,29 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.myframework.http.HttpConstant.DEFAULT_TIME_OUT;
+import static com.example.baselib.http.HttpConstant.DEFAULT_TIME_OUT;
 
 /**
  * createBy ${huanghao}
  * on 2019/6/28
  * data 以后所有请求的调用方法写在这里,然后所有请求路径和方式放到MovieService,由一个MovieService同意调用
  */
-public class HttpMethod {
+public abstract class HttpMethod{
     public static Retrofit mRetrofit;
     //以后所有请求的调用方法写在这里,然后所有请求路径和方式放到MovieService,由一个MovieService同意调用
     private MovieService mMovieService;
 
-    private  HttpMethod() {
+
+    public MovieService getmMovieService(){
+        return mMovieService;
+    }
+
+    public HttpMethod() {
         if (mRetrofit == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);//连接 超时时间
-            builder.writeTimeout(DEFAULT_TIME_OUT,TimeUnit.SECONDS);//写操作 超时时间
-            builder.readTimeout(DEFAULT_TIME_OUT,TimeUnit.SECONDS);//读操作 超时时间
+            builder.writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);//写操作 超时时间
+            builder.readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);//读操作 超时时间
             builder.retryOnConnectionFailure(true);//错误重连
             if (BuildConfig.DEBUG) {
                 // Log信息拦截器
@@ -51,26 +56,15 @@ public class HttpMethod {
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(okHttpClient)
                     .build();
+
             mMovieService = mRetrofit.create(MovieService.class);
         }
 
     }
 
-    //在访问HttpMethods时创建单例
-    private static class SingletonHolder {
-        private static final HttpMethod INSTANCE = new HttpMethod();
-    }
 
-    //获取单例
-    public static HttpMethod getInstance() {
-        return SingletonHolder.INSTANCE;
-    }
-
-    public Observable<TestBean> getCityWeather(String cityId){
-       return mMovieService.loadDataByRetrofit(cityId);
-    }
-
-    public Observable<UpdateBean> checkUpdate(){
+    //正式更新用的，但是url地址到时候自己改
+    public Observable<UpdateBean> checkUpdate() {
         return mMovieService.checkUpdate();
     }
 }

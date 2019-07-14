@@ -24,6 +24,8 @@ android {
         targetCompatibility = '1.8'
     }
 
+
+
 }
 
 dependencies {
@@ -44,4 +46,17 @@ dependencies {
     annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
 
     implementation rootProject.ext.multidex["multidex"]
+
+
+    /*
+       在module的android 里面配置
+    *  greendao {
+        schemaVersion 1
+        daoPackage 'com.jyjt.ydyl.greendao.gen'
+        targetGenDir 'src/main/java'
+
+       还有 project的build.gradle里面的dependencies
+    }
+    * */
+    //api rootProject.ext.greendao
 }

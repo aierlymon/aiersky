@@ -1,4 +1,4 @@
-package com.example.myframework.util;
+package com.example.baselib.utils;
 
 
 import android.arch.lifecycle.Lifecycle;
@@ -12,16 +12,13 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 
-import com.example.baselib.utils.CipherUtils;
-import com.example.baselib.utils.MyLog;
-import com.example.baselib.utils.PackageUtils;
-import com.example.myframework.http.HttpConstant;
-import com.example.myframework.http.HttpMethod;
-import com.example.myframework.http.MovieService;
-import com.example.myframework.http.bean.UpdateBean;
-import com.example.myframework.http.interrceptorebean.JsDownloadInterceptor;
-import com.example.myframework.http.listener.JsDownloadListener;
-import com.example.myframework.ui.widgets.UpdateDialog;
+import com.example.baselib.http.HttpConstant;
+import com.example.baselib.http.HttpMethod;
+import com.example.baselib.http.MovieService;
+import com.example.baselib.http.bean.UpdateBean;
+import com.example.baselib.http.interrceptorebean.JsDownloadInterceptor;
+import com.example.baselib.http.listener.JsDownloadListener;
+import com.example.baselib.widget.UpdateDialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
@@ -53,12 +51,12 @@ public class UpdateUtil implements LifecycleObserver {
     private Context context;
     private Retrofit retrofit;
     private JsDownloadListener jsDownloadListener;
-    private List<Disposable> disposableList;
+    private CompositeDisposable mCompositeDisposable;
     public UpdateUtil(Context context, JsDownloadListener jsDownloadListener) {
         this.jsDownloadListener=jsDownloadListener;
         this.context = context.getApplicationContext();
-        disposableList=new ArrayList<>();
         //定义下载client
+        mCompositeDisposable=new CompositeDisposable();
         JsDownloadInterceptor mInterceptor = new JsDownloadInterceptor(jsDownloadListener);
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(mInterceptor)
@@ -78,14 +76,14 @@ public class UpdateUtil implements LifecycleObserver {
     private UpdateDialog builder;
 
 
-    public boolean checkUpdate() {
-        HttpMethod.getInstance().checkUpdate()
+    public boolean checkUpdate(HttpMethod httpMethod) {
+        httpMethod.checkUpdate()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UpdateBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        disposableList.add(d);
+                        mCompositeDisposable.add(d);
                     }
 
                     @Override
@@ -166,13 +164,7 @@ public class UpdateUtil implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestory() {
-        for (Disposable d :
-                disposableList) {
-            if (!d.isDisposed())
-                d.dispose();
-        }
-        disposableList.clear();
-        disposableList = null;
+        clearDisposable();
         context = null;
     }
 
@@ -186,7 +178,7 @@ public class UpdateUtil implements LifecycleObserver {
                     download(updateBean.getApkUrl(), file, new Observer() {
                         @Override
                         public void onSubscribe(Disposable d) {
-                            disposableList.add(d);
+                            mCompositeDisposable.add(d);
                         }
 
                         @Override
@@ -201,7 +193,7 @@ public class UpdateUtil implements LifecycleObserver {
                                 //跳转启动apk有问题
                                 //判读版本是否在7.0以上
                                 File file = new File(getApkPath(), updateBean.getApk_name());
-                                com.example.mytcpandws.utils.MyLog.i("file存在吗: "+file.exists());
+                                MyLog.i("file存在吗: "+file.exists());
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
                                 //判读版本是否在7.0以上
                                 if (Build.VERSION.SDK_INT >= 24) {
@@ -243,8 +235,6 @@ public class UpdateUtil implements LifecycleObserver {
                 })
                 .build();
         builder.shown();
-
-
     }
 
     private String getApkPath() {
@@ -264,13 +254,80 @@ public class UpdateUtil implements LifecycleObserver {
     }
 
     public void clearDisposable(){
-        if(disposableList!=null&&disposableList.size()>0){
-            for(Disposable disposable :disposableList){
-                if(disposable != null && !disposable.isDisposed()){
-                    disposable.dispose();
-                }
-            }
+        if(mCompositeDisposable!=null){
+            mCompositeDisposable.clear();
+            mCompositeDisposable = null;
         }
+    }
 
+
+    //测试工具类用的
+    public void testUpdate(Context context, UpdateBean updateBean) {
+        builder = UpdateDialog.Builder(context)
+                .setTitle("是否更新到版本: " + updateBean.getVersionName())
+                .setMessage("更新内容为" + updateBean.getUpdateLog() + "\r\n" + "更新大小为: " + updateBean.getTarget_size())
+                .setOnConfirmClickListener("确定", view -> {
+                    //开始下载文件
+                    File file = new File(getApkPath(),updateBean.getApk_name());
+                    download(updateBean.getApkUrl(), file, new Observer() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            mCompositeDisposable.add(d);
+                        }
+
+                        @Override
+                        public void onNext(Object o) {
+                            MyLog.i("完成了下载");
+                            //md5比较，比较一致的情况下触发安装apk
+                            File file1=new File(getApkPath(),updateBean.getApk_name());
+                            String down_md5=CipherUtils.getFileMD5(file1);
+                            if(updateBean.getNew_md5().equals(down_md5)){
+                                //跳转安装apk
+                                MyLog.i("md5校验成功");
+                                //跳转启动apk有问题
+                                //判读版本是否在7.0以上
+                                File file = new File(getApkPath(), updateBean.getApk_name());
+                                MyLog.i("file存在吗: "+file.exists());
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                //判读版本是否在7.0以上
+                                if (Build.VERSION.SDK_INT >= 24) {
+                                    //provider authorities
+                                    Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName()+".fileprovider", file);
+                                    //Granting Temporary Permissions to a URI
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                    intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                                } else {
+                                    intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                                }
+                                jsDownloadListener.onDownSuccess(intent);
+                            }else{
+                                MyLog.i("md5校验失败");
+                                clearDisposable();
+                                jsDownloadListener.onFail(FILE_MD5_ERROR,"下载的文件的md5值不一样，请重新下载");
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            MyLog.i("连接资源失败了");
+                            clearDisposable();
+                            jsDownloadListener.onFail(FILE_DOWNLOAD_ERROR,e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+                        }
+                    });
+                    builder.dismiss();
+                })
+                .setOnCancelClickListener("取消", view -> {
+
+                    if (builder != null) {
+                        builder.dismiss();
+                        this.context = null;
+                    }
+                })
+                .build();
+        builder.shown();
     }
 }

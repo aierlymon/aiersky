@@ -1,8 +1,6 @@
-package com.example.myframework.http;
+package com.example.baselib.http;
 
-import android.util.Log;
-
-import com.example.myframework.http.listener.JsDownloadListener;
+import com.example.baselib.http.listener.JsDownloadListener;
 
 import java.io.IOException;
 
@@ -54,11 +52,6 @@ public class JsResponseBody extends ResponseBody {
                     if (bytesRead != -1) {
                         downloadListener.onProgress((int) (totalBytesRead * 100 / responseBody.contentLength()));
                     }
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
                 return bytesRead;
             }

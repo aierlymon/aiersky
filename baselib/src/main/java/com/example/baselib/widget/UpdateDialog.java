@@ -1,4 +1,4 @@
-package com.example.myframework.ui.widgets;
+package com.example.baselib.widget;
 
 import android.app.Dialog;
 import android.content.Context;

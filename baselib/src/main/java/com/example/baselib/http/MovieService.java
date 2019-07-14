@@ -1,8 +1,8 @@
-package com.example.myframework.http;
+package com.example.baselib.http;
 
 
-import com.example.myframework.http.bean.TestBean;
-import com.example.myframework.http.bean.UpdateBean;
+import com.example.baselib.http.bean.TestBean;
+import com.example.baselib.http.bean.UpdateBean;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
@@ -17,15 +17,21 @@ import retrofit2.http.Url;
  */
 public interface MovieService {
 
+    //这个是以后也不能删除的
+    @GET("adat/sk/")
+    Observable<UpdateBean> checkUpdate();
+
+    //这个是以后都不能删除的
+    @Streaming
+    @GET
+    Observable<ResponseBody> download(@Url String url);
+
+
+
+
     // http://www.weather.com.cn/adat/sk/101190201.html
     //加载天气
     @GET("adat/sk/{cityId}.html")
     Observable<TestBean> loadDataByRetrofit(@Path("cityId") String cityId);
 
-    @GET("adat/sk/")
-    Observable<UpdateBean> checkUpdate();
-
-    @Streaming
-    @GET
-    Observable<ResponseBody> download(@Url String url);
 }

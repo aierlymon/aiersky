@@ -1,16 +1,17 @@
 package com.example.myframework.mvp.presenters;
 
-import com.example.myframework.http.HttpMethod;
-import com.example.myframework.http.bean.TestBean;
-import com.example.myframework.http.myrxsubcribe.MySubscriber;
+import com.example.baselib.http.bean.TestBean;
+import com.example.baselib.http.myrxsubcribe.MySubscriber;
 import com.example.baselib.mvp.BasePresenter;
 import com.example.baselib.utils.MyLog;
+import com.example.myframework.http.MyHttpMethods;
 import com.example.myframework.mvp.views.MainView;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainPresenter extends BasePresenter<MainView> {
+
     @Override
     protected boolean isUseEventBus() {
         return false;
@@ -18,7 +19,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     //请求http连接
     public void success(String s) {
-        HttpMethod.getInstance().getCityWeather("101190201")
+        MyHttpMethods.getInstance().getCityWeather("101190201")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new MySubscriber<TestBean>(this) {

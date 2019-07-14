@@ -1,7 +1,7 @@
-package com.example.myframework.http.interrceptorebean;
+package com.example.baselib.http.interrceptorebean;
 
-import com.example.myframework.http.JsResponseBody;
-import com.example.myframework.http.listener.JsDownloadListener;
+import com.example.baselib.http.JsResponseBody;
+import com.example.baselib.http.listener.JsDownloadListener;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.example.myframework.http.bean;
+package com.example.baselib.http.bean;
 
 /**
  * createBy ${huanghao}

@@ -1,4 +1,4 @@
-package com.example.myframework.http.interrceptorebean;
+package com.example.baselib.http.interrceptorebean;
 
 import com.example.baselib.utils.MyLog;
 

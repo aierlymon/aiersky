@@ -1,9 +1,12 @@
 package com.example.myframework.mvp.presenters;
 
-import com.example.myframework.http.HttpMethod;
-import com.example.myframework.http.bean.TestBean;
-import com.example.myframework.http.myrxsubcribe.MySubscriber;
+import android.content.Context;
+
+import com.example.baselib.http.HttpMethod;
+import com.example.baselib.http.bean.TestBean;
+import com.example.baselib.http.myrxsubcribe.MySubscriber;
 import com.example.baselib.mvp.BasePresenter;
+import com.example.myframework.http.MyHttpMethods;
 import com.example.myframework.mvp.models.DataViewModel;
 import com.example.myframework.mvp.models.TitleModel;
 import com.example.myframework.mvp.views.FirstFragView;
@@ -20,10 +23,14 @@ import io.reactivex.schedulers.Schedulers;
  * on 2019/6/26
  */
 public class FirstFraPresenter extends BasePresenter<FirstFragView> {
+
+
     @Override
     protected boolean isUseEventBus() {
         return false;
     }
+
+
 
     public void requestHttp() {
         List<BaseMulDataModel> list = new ArrayList<>();
@@ -38,7 +45,7 @@ public class FirstFraPresenter extends BasePresenter<FirstFragView> {
         }
         getView().refreshUi(list);
         //Http
-        HttpMethod.getInstance().getCityWeather("101190201")
+        MyHttpMethods.getInstance().getCityWeather("101190201")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new MySubscriber<TestBean>(this) {
