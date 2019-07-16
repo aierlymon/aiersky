@@ -68,6 +68,7 @@ ext {
             "butterknife-compiler": "com.jakewharton:butterknife-compiler:${dependVersion.bufferknife}"
     ]
 
+    //tcpandwebsocket的aar要用到
     javawebsocket = [
             "javawebsockey": "org.java-websocket:Java-WebSocket:${dependVersion.javawebsocket}"
     ]
@@ -76,10 +77,12 @@ ext {
             "multidex": "com.android.support:multidex:${dependVersion.multidex}"
     ]
 
+    //tcpandwebsocket的aar要用到,tcp使用的时候记得动态注册自定义的Net广播，再成功里面连接，失败那里断开
     netty = [
             "netty": "io.netty:netty-all:${dependVersion.netty}"
     ]
 
+    //二维码aar专用库
     zxing = [
             "zxing-core"    : "com.google.zxing:core:3.2.1",
             "bga-qrcodecore": "cn.bingoogolapple:bga-qrcodecore:1.1.7@aar",
