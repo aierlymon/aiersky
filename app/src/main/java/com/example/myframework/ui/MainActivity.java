@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
 
+import com.back.websocketlib.ws.client.WebSocketThread;
 import com.example.baselib.base.BaseMvpTitleActivity;
 import com.example.baselib.utils.LoadDialogUtil;
 import com.example.baselib.utils.MyLog;
@@ -21,12 +19,8 @@ import com.example.myframework.R;
 import com.example.myframework.mvp.presenters.MainPresenter;
 import com.example.myframework.mvp.views.MainView;
 import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
-import com.example.mytcpandws.params.WSParams;
 import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
 import com.example.mytcpandws.tcpconnect.TcpClient;
-import com.back.websocketlib.ws.client.WebSocketThread;
-
-import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,8 +49,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     TextView receive_data;
 
     private NetWorkStateBroadcast netWorkStateBroadcast;
-    private WSHandler mWSHandler;
-    private WebSocketThread<WSHandler> myHandlerWebSocketThread;
+    private WebSocketThread mWebSocketThread;
+
 
     @Override
     protected MainPresenter createPresenter() {
@@ -81,7 +75,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         registe();
 
 
-        mWSHandler = new WSHandler(this);
+
 
 
 
@@ -95,14 +89,34 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
     private void registe() {
+        mWebSocketThread = new WebSocketThread("sad",2020,new WebSocketThread.OnConnectStateChangeListener(){
+
+            @Override
+            public void onConnect() {
+
+            }
+
+            @Override
+            public void onDisConnect() {
+
+            }
+
+            @Override
+            public void onConnectFail() {
+
+            }
+
+            @Override
+            public void onReceive(String msg) {
+
+            }
+        });
+        mWebSocketThread.start();
+
         netWorkStateBroadcast = new NetWorkStateBroadcast();
         netWorkStateBroadcast.setmOnNetStateChangListener(new NetWorkStateBroadcast.OnNetStateChangListener() {
             @Override
             public void onNetWorkSuccess() {
-
-                //开启ws
-                myHandlerWebSocketThread = new WebSocketThread<>("192.168.6.149", 8008, mWSHandler);
-                myHandlerWebSocketThread.start();
 
 
                 for (int i = 8; i < 16; i++) {
@@ -171,7 +185,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
                 send_data.setText("Hello Java");//这个意思一下= =
                 break;
             case R.id.ws_btn:
-                myHandlerWebSocketThread.send("Hello C");
+                mWebSocketThread.send("Hello C");
                 send_data.setText("Hello C");//这个意思一下= =
                 break;
             case R.id.btn_intent:
@@ -188,40 +202,7 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     }
 
 
-    //这个式ws的handler
-    class WSHandler extends Handler {
-        private WeakReference<MainActivity> mWeakReference;
 
-        public WSHandler(MainActivity activity) {
-            mWeakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            MainActivity mainActivity = mWeakReference.get();
-            if (mainActivity == null) {
-                return;
-            }
-            switch (msg.what) {
-                case WSParams.WS_HANDLE_CONNECT_SUCCESS:
-                    MyLog.i("MainActivity的接受: WS_HANDLE_CONNECT_SUCCESS");
-                    break;
-                case WSParams.WS_HANDLE_CONNECT_BREAK:
-                    MyLog.i("MainActivity的接受: WS_HANDLE_CONNECT_BREAK");
-                    break;
-                case WSParams.WS_HANDLE_RECEIVE:
-                    MyLog.i("MainActivity的接受: WS_HANDLE_RECEIVE");
-                    Bundle bundle = msg.getData();
-                    String receive = bundle.getString(WSParams.RCEV);
-                    receive_data.setText("接收的数据是: " + receive);
-                    break;
-                case WSParams.WS_HANDLE_ERROR:
-                    MyLog.i("MainActivity的接受: WS_HANDLE_ERROR");
-                    break;
-            }
-        }
-    }
 
     @Override
     protected void onDestroy() {
@@ -231,8 +212,8 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         //取消广播注册
         unregisterReceiver(netWorkStateBroadcast);
         //关闭ws
-        if (myHandlerWebSocketThread != null) {
-            myHandlerWebSocketThread.close();
+        if (mWebSocketThread != null) {
+            mWebSocketThread.close();
         }
     }
 }

@@ -34,7 +34,7 @@ public class WebSocketThread extends Thread implements WebSocketUtil.MsgListener
         void onConnectFail();
 
         void onReceive(String msg);
-        
+
     }
 
     private OnConnectStateChangeListener onConnectStateChangeListener;
@@ -44,6 +44,7 @@ public class WebSocketThread extends Thread implements WebSocketUtil.MsgListener
     public WebSocketThread(String address, int port,OnConnectStateChangeListener onConnectStateChangeListener ) {
         this.address = address;
         this.port = port;
+        this.onConnectStateChangeListener=onConnectStateChangeListener;
     }
 
     @Override

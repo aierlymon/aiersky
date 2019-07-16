@@ -46,4 +46,5 @@ dependencies {
 
     implementation project(':baselib')
     implementation project(path: ':tcplib')
+    implementation project(":websocketlib")
 }
