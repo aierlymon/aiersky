@@ -24,7 +24,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation rootProject.ext.netty["netty"]
     implementation rootProject.ext.javawebsocket["javawebsockey"]
 }

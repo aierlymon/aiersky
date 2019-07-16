@@ -29,7 +29,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     //leakCanary
     debugApi rootProject.ext.testDeps["leakcanary-debug"]
     releaseApi rootProject.ext.testDeps["leakcanary-release"]
