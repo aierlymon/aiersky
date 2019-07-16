@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.example.baselib.http.bean.UpdateBean;
 import com.example.baselib.http.listener.JsDownloadListener;
 import com.example.baselib.utils.UpdateUtil;
-import com.example.myframework.http.MyHttpMethods;
 import com.example.mytcpandws.utils.MyLog;
 
 /**

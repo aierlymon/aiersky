@@ -198,7 +198,7 @@ public class UpdateUtil implements LifecycleObserver {
                                 //判读版本是否在7.0以上
                                 if (Build.VERSION.SDK_INT >= 24) {
                                     //provider authorities
-                                    Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName()+".fileprovider", file);
+                                    Uri apkUri = FileProvider.getUriForFile(context, "com.example.baselib.fileprovider", file);
                                     //Granting Temporary Permissions to a URI
                                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                     intent.setDataAndType(apkUri, "application/vnd.android.package-archive");

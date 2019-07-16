@@ -21,15 +21,21 @@ import static com.example.baselib.http.HttpConstant.DEFAULT_TIME_OUT;
  * on 2019/6/28
  * data 以后所有请求的调用方法写在这里,然后所有请求路径和方式放到MovieService,由一个MovieService同意调用
  */
-public abstract class HttpMethod{
+public class HttpMethod{
     public static Retrofit mRetrofit;
     //以后所有请求的调用方法写在这里,然后所有请求路径和方式放到MovieService,由一个MovieService同意调用
     private MovieService mMovieService;
 
+    private static HttpMethod httpMethods;
 
-    public MovieService getmMovieService(){
-        return mMovieService;
+    //获取单例
+    public static HttpMethod getInstance() {
+        if(httpMethods==null){
+            httpMethods=new HttpMethod();
+        }
+        return httpMethods;
     }
+
 
     public HttpMethod() {
         if (mRetrofit == null) {
@@ -66,5 +72,10 @@ public abstract class HttpMethod{
     //正式更新用的，但是url地址到时候自己改
     public Observable<UpdateBean> checkUpdate() {
         return mMovieService.checkUpdate();
+    }
+
+    //测试用的
+    public Observable<TestBean> getCityWeather(String cityId){
+        return  mMovieService.loadCityDate(cityId);
     }
 }
