@@ -68,7 +68,7 @@ ext {
             "butterknife-compiler": "com.jakewharton:butterknife-compiler:${dependVersion.bufferknife}"
     ]
 
-    //tcpandwebsocket的aar要用到
+    //websocket的aar要用到
     javawebsocket = [
             "javawebsockey": "org.java-websocket:Java-WebSocket:${dependVersion.javawebsocket}"
     ]
@@ -77,7 +77,7 @@ ext {
             "multidex": "com.android.support:multidex:${dependVersion.multidex}"
     ]
 
-    //tcpandwebsocket的aar要用到,tcp使用的时候记得动态注册自定义的Net广播，再成功里面连接，失败那里断开
+    //tcp的aar要用到,tcp使用的时候记得动态注册自定义的Net广播，再成功里面连接，失败那里断开
     netty = [
             "netty": "io.netty:netty-all:${dependVersion.netty}"
     ]

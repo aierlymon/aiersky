@@ -1,4 +1,4 @@
-package com.example.mytcpandws.ws.client;
+package com.back.websocketlib.ws.client;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;

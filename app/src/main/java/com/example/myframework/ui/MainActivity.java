@@ -24,7 +24,7 @@ import com.example.mytcpandws.broadcast.NetWorkStateBroadcast;
 import com.example.mytcpandws.params.WSParams;
 import com.example.mytcpandws.tcpconnect.ConnectUntilBox;
 import com.example.mytcpandws.tcpconnect.TcpClient;
-import com.example.mytcpandws.ws.client.WebSocketThread;
+import com.back.websocketlib.ws.client.WebSocketThread;
 
 import java.lang.ref.WeakReference;
 

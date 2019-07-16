@@ -25,5 +25,4 @@ android {
 
 dependencies {
     implementation rootProject.ext.netty["netty"]
-    implementation rootProject.ext.javawebsocket["javawebsockey"]
 }

@@ -1,1 +1,1 @@
-include ':app', ':baselib', ':mytcpandws', ':zxinglib'
+include ':app', ':baselib', ':tcplib', ':zxinglib', ':websocketlib'

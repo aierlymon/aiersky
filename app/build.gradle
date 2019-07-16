@@ -45,5 +45,5 @@ dependencies {
     implementation rootProject.ext.otherWidgets
 
     implementation project(':baselib')
-    implementation project(path:':mytcpandws')
+    implementation project(path: ':tcplib')
 }
