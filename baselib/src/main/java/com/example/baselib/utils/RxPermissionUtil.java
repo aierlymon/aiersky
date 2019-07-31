@@ -1,9 +1,25 @@
 package com.example.baselib.utils;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.View;
 
+import androidx.fragment.app.FragmentActivity;
+
+import com.example.baselib.R;
+import com.example.baselib.myapplication.App;
+import com.example.baselib.widget.PermissionDialog;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * createBy ${huanghao}
@@ -12,9 +28,15 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 public class RxPermissionUtil {
 
 
-    private RxPermissionUtil() {
-    }
+    private Map<String, String> permissionMap;
 
+    private RxPermissionUtil() {
+        permissionMap = new HashMap<>();
+        permissionMap.put("android.permission.REQUEST_INSTALL_PACKAGES", "安装应用");
+        permissionMap.put("android.permission.READ_EXTERNAL_STORAGE", "读取SD卡");
+        permissionMap.put("android.permission.WRITE_EXTERNAL_STORAGE", "写入SD卡");
+        permissionMap.put("android.permission.READ_PHONE_STATE", "读取手机状态");
+    }
 
 
     private static RxPermissionUtil rxPermissionUtil;
@@ -28,16 +50,82 @@ public class RxPermissionUtil {
         return rxPermissionUtil;
     }
 
+    private StringBuilder builder = new StringBuilder();
+    ;
+    private int leng = 0;
+
+    private PermissionDialog build;
+
+    private WeakReference<Activity> weakReference;
+
     public void permission(Activity activity, String[] list) {
-        RxPermissions rxPermissions = new RxPermissions((FragmentActivity) activity);
+        weakReference = new WeakReference<>(activity);
+        RxPermissions rxPermissions = new RxPermissions((FragmentActivity) weakReference.get());
         rxPermissions.requestEach(list).subscribe(permission -> {
+
+            MyLog.i("leng: " + leng);
             if (permission.granted) {
+                ++leng;
                 MyLog.i("获取了" + permission.name + "权限");
             } else if (permission.shouldShowRequestPermissionRationale) {
-                MyLog.i("应该获取了" + permission.name + "权限");
+                ++leng;
+                //填写弹窗+权限名字
+                if (leng == list.length) {
+                    builder.append("[" + permissionMap.get(permission.name) + "]权限");
+                } else {
+                    builder.append("[" + permissionMap.get(permission.name) + "]-");
+                }
+                MyLog.i("应该需要获取" + permission.name + "权限");
             } else {
-                MyLog.i("没有获取到" + permission.name + "权限");
+                ++leng;
+            }
+
+            MyLog.i("builder.tostring: "+builder.toString()+"  len: "+list.length+"  leng: "+leng);
+
+            if (leng != 0 && leng == list.length) {
+
+                if(builder.lastIndexOf("权限")==-1&&builder.lastIndexOf("-")!=-1){
+                    builder.replace(builder.length()-1,builder.length(),"权限");
+                }
+                if (!TextUtils.isEmpty(builder.toString())) {
+                    build = PermissionDialog.Builder(weakReference.get())
+                            .setTitle(activity.getString(R.string.power_ps))
+                            .setMessage("需要获取" + builder.toString())
+                            .setOnConfirmClickListener("去设置", view -> {
+                                //跳转app权限设置
+                                Intent localIntent = new Intent();
+                                localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                if (Build.VERSION.SDK_INT >= 9) {
+                                    localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                                    localIntent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+                                } else if (Build.VERSION.SDK_INT <= 8) {
+                                    localIntent.setAction(Intent.ACTION_VIEW);
+                                    localIntent.setClassName("com.android.settings", "com.android.settings.InstalledAppDetails");
+                                    localIntent.putExtra("com.android.settings.ApplicationPkgName", activity.getPackageName());
+                                }
+                                //把builder为Null
+                                PermissionDialog.Builder builder=build.getBuilder();
+                                if(builder!=null){
+                                    builder.setmContext(null);
+                                    builder=null;
+                                }
+                                build.dismiss();
+                                build=null;
+                                weakReference.get().startActivity(localIntent);
+                            }).build();
+                    build.setOnKeyListener((dialog, keyCode, event) -> {
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            return true;
+                        } else {
+                            return false; //默认返回 false
+                        }
+                    });
+                    build.shown();
+
+                }
             }
         });
+
+
     }
 }

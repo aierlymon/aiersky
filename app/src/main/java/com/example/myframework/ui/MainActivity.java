@@ -88,6 +88,11 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
         manager.test(bitmap);*/
     }
 
+    @Override
+    public boolean isUseLayoutRes() {
+        return true;
+    }
+
     private void registe() {
         mWebSocketThread = new WebSocketThread("sad",2020,new WebSocketThread.OnConnectStateChangeListener(){
 
@@ -151,6 +156,11 @@ public class MainActivity extends BaseMvpTitleActivity<MainView, MainPresenter> 
     @Override
     protected boolean hasBackHome() {
         return true;
+    }
+
+    @Override
+    protected boolean isShowToolbar() {
+        return false;
     }
 
     @Override

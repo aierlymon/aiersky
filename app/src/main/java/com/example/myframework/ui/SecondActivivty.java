@@ -1,9 +1,10 @@
 package com.example.myframework.ui;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
+
+
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.baselib.base.BaseMVPFragment;
 import com.example.baselib.base.BaseMvpActivity;
@@ -15,6 +16,7 @@ import com.example.myframework.mvp.views.SecondView;
 import com.example.myframework.ui.adapter.ActSecPagerAdapter;
 import com.example.myframework.ui.fragment.FirstTabFragment;
 import com.example.myframework.ui.fragment.SecondTabFragment;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,11 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_second;
+    }
+
+    @Override
+    public boolean isUseLayoutRes() {
+        return false;
     }
 
     @Override

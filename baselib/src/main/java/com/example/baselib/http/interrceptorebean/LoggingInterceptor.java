@@ -1,10 +1,13 @@
 package com.example.baselib.http.interrceptorebean;
 
+import com.example.baselib.broadcast.NetWorkStateBroadcast;
 import com.example.baselib.utils.MyLog;
 
 import java.io.IOException;
 
+import okhttp3.CacheControl;
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -15,9 +18,39 @@ import okhttp3.Response;
 public class LoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
-        //都在io线程时候就拦截到了
-        MyLog.i("request: "+chain.request().url().toString()+"  thread: "+Thread.currentThread().getName());
-        MyLog.i("response: "+chain.proceed(chain.request()).body().string()+" thread: "+Thread.currentThread().getName());
-        return chain.proceed(chain.request());
+        Request request = chain.request();
+        MyLog.i("request: "+request.toString());
+        //当没有网络时
+        if (!NetWorkStateBroadcast.isOnline.get()) {
+            MyLog.i("我进来了没有网络");
+            request = request.newBuilder()
+                    //CacheControl.FORCE_CACHE; //仅仅使用缓存
+                    //CacheControl.FORCE_NETWORK;// 仅仅使用网络
+                    .cacheControl(CacheControl.FORCE_CACHE)
+                    .build();
+        }
+
+        Response proceed = chain.proceed(request);
+
+        if (NetWorkStateBroadcast.isOnline.get()) {
+            MyLog.i("我进来了有网络");
+            //有网络时
+            return proceed.newBuilder()
+                    //清除头信息
+                    .removeHeader("Pragma")
+                    //设置在线缓存时间为60秒，
+                    .header("Cache-Control", "public, max-age=" + 60)
+                    .build();
+        } else {
+            MyLog.i("我进来了无网络是偶");
+            //没网络时
+            int maxTime =  24 * 60 * 60;//离线缓存时间：1天
+            return proceed.newBuilder()
+                    .removeHeader("Pragma")
+                    //设置离线缓存时间为4周，
+                    .header("Cache-Control", "public, only-if-cached, max-stale=" + maxTime)
+                    .build();
+        }
     }
+
 }

@@ -12,6 +12,11 @@ import com.example.myframework.mvp.views.SecondFragView;
 public class SecondFraPresenter extends BasePresenter<SecondFragView> {
 
     @Override
+    public void showError(String msg) {
+
+    }
+
+    @Override
     protected boolean isUseEventBus() {
         return false;
     }

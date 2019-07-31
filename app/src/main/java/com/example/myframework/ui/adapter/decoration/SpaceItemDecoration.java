@@ -1,8 +1,9 @@
 package com.example.myframework.ui.adapter.decoration;
 
 import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by 98733 on 2018/8/14.

@@ -16,7 +16,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -29,6 +29,7 @@ android {
 }
 
 dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
     //leakCanary
     debugApi rootProject.ext.testDeps["leakcanary-debug"]
     releaseApi rootProject.ext.testDeps["leakcanary-release"]
@@ -40,22 +41,21 @@ dependencies {
     api rootProject.ext.rxJavaLibs
     // commonLibs
     api rootProject.ext.commonLibs
-
     //引用module的butterknife的时候那个引用的build.gradle要加这个，不然引用失败，无法调用
-    annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
-
+    annotationProcessor rootProject.ext.annotationProcessorList["butterknife-compiler"]
     implementation rootProject.ext.multidex["multidex"]
-
-
+    implementation project(path: ':model')
     /*
-       在module的android 里面配置
-    *  greendao {
-        schemaVersion 1
-        daoPackage 'com.jyjt.ydyl.greendao.gen'
-        targetGenDir 'src/main/java'
+           在module的android 里面配置
+        *  greendao {
+            schemaVersion 1
+            daoPackage 'com.jyjt.ydyl.greendao.gen'
+            targetGenDir 'src/main/java'
 
-       还有 project的build.gradle里面的dependencies
-    }
-    * */
+           还有 project的build.gradle里面的dependencies
+        }
+        * */
     //api rootProject.ext.greendao
+    /*implementation files('libs/jcore-android-2.1.2.jar')
+    implementation files('libs/jpush-android-3.3.4.jar')*/
 }

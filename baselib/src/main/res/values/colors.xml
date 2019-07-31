@@ -6,5 +6,7 @@
 
     <color name="white">#ffffff</color>
     <color name="transparent_75">#ba000000</color>
+    <color name="update_dialog">#E6505050</color>
+    <color name="ic_uncheck">#E6505050</color>
 
 </resources>

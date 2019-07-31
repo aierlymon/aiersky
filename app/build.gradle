@@ -43,8 +43,8 @@ dependencies {
     annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
 
     implementation rootProject.ext.otherWidgets
-
-    implementation project(':baselib')
     implementation project(path: ':tcplib')
+    implementation project(path: ':model')
     implementation project(":websocketlib")
+    implementation project(path: ':baselib')
 }

@@ -1,12 +1,13 @@
 package com.example.baselib.base;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.baselib.R;
 import com.example.baselib.mvp.IPresenter;
@@ -22,7 +23,6 @@ public abstract class BaseMvpTitleActivity<V extends IView,P extends IPresenter<
     private View bodyView;
 
 
-
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_base_title;
@@ -32,14 +32,32 @@ public abstract class BaseMvpTitleActivity<V extends IView,P extends IPresenter<
 
     protected abstract boolean hasBackHome();
 
+    protected abstract boolean isShowToolbar();
+
+    public void showToolbar(){
+        if(toolbar!=null){
+            toolbar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideToolbar(){
+        if(toolbar!=null){
+            toolbar.setVisibility(View.GONE);
+        }
+    }
+
     @Override
    public void initView() {
         super.initView();
         toolbar = ((Toolbar) findViewById(R.id.base_toolbar));
-        toolbar.setTitle("");
+        if(isShowToolbar()){
+            showToolbar();
+        }
+
         mToolBarTitle = ((TextView) findViewById(R.id.base_title_tv));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(hasBackHome());
+        toolbar.setTitle("");
         bodyView=LayoutInflater.from(this).inflate(getBodyLayoutRes(),null);
         ((FrameLayout) findViewById(R.id.base_container)).addView(bodyView);
     }
@@ -58,5 +76,9 @@ public abstract class BaseMvpTitleActivity<V extends IView,P extends IPresenter<
 
     public void setTitleColor(@ColorInt int colorRes){
         mToolBarTitle.setTextColor(colorRes);
+    }
+
+    public void setTitleBackground(@ColorInt int colorRes){
+        toolbar.setBackgroundColor(colorRes);
     }
 }

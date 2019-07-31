@@ -15,7 +15,7 @@ ext {
             glideSdkVersion         : "4.8.0",
             rxJava                  : "2.2.2",
             rxAndroid               : "2.1.0",
-            bufferknife             : "8.8.1",
+            bufferknife             : "10.0.0",
             javawebsocket           : "1.4.0",
             multidex                : "1.0.3",
             netty                   : "4.1.27.Final",

@@ -1,6 +1,6 @@
 package com.example.myframework.ui.fragment;
 
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.baselib.base.BaseMVPFragment;
 import com.example.myframework.R;
