@@ -46,16 +46,19 @@ dependencies {
     implementation rootProject.ext.multidex["multidex"]
     implementation project(path: ':model')
     /*
-           在module的android 里面配置
-        *  greendao {
-            schemaVersion 1
-            daoPackage 'com.jyjt.ydyl.greendao.gen'
-            targetGenDir 'src/main/java'
+               在module的android 里面配置
+            *  greendao {
+                schemaVersion 1
+                daoPackage 'com.jyjt.ydyl.greendao.gen'
+                targetGenDir 'src/main/java'
 
-           还有 project的build.gradle里面的dependencies
-        }
-        * */
+               还有 project的build.gradle里面的dependencies
+            }
+            * */
     //api rootProject.ext.greendao
     /*implementation files('libs/jcore-android-2.1.2.jar')
-    implementation files('libs/jpush-android-3.3.4.jar')*/
+        implementation files('libs/jpush-android-3.3.4.jar')*/
+    implementation files('libs/umeng-common-2.1.0.jar')
+    implementation files('libs/umeng-analytics-8.1.1.jar')
+    implementation files('libs/utdid4all-1.1.5.3_proguard.jar')
 }

@@ -9,6 +9,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        flavorDimensions "1.0"
     }
 
     compileOptions {
@@ -25,11 +26,49 @@ android {
         }
     }
 
+    productFlavors {
+        wandoujia {
+        }
+
+        xiaomi {
+        }
+
+    }
+
+    productFlavors.all { flavor ->
+
+        flavor.manifestPlaceholders = [MY_CHANNEL: name]
+
+    }
+
+
+
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+            manifestPlaceholders = [
+                    MY_APP_KEY : "5d423995570df3e92300092a", //JPush 上注册的包名对应的 Appkey.
+                  /*  MY_CHANNEL : "android-app", //暂时填写默认值即可.*/
+            ]
+        }
+
+        debug{
+            /*友盟推送的配置*/
+            manifestPlaceholders = [
+                    MY_APP_KEY : "5d423995570df3e92300092a", //JPush 上注册的包名对应的 Appkey.
+                  /*  MY_CHANNEL : "android-app", //暂时填写默认值即可.*/
+            ]
+        }
+
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def formattedDate = new Date().format('yyyy_MM_dd')
+            outputFileName = rootProject.getName()+"-"+variant.flavorName+"-"+buildType.name+"-"+formattedDate+"-v"+defaultConfig.versionName+"-"+ defaultConfig.versionCode+ ".apk";
         }
     }
 
@@ -38,13 +77,12 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     //引用module的butterknife的时候要加这个，不然引用失败
-    annotationProcessor  rootProject.ext.annotationProcessorList["butterknife-compiler"]
-
+    annotationProcessor rootProject.ext.annotationProcessorList["butterknife-compiler"]
     implementation rootProject.ext.otherWidgets
     implementation project(path: ':tcplib')
     implementation project(path: ':model')
-    implementation project(":websocketlib")
+    implementation project(':websocketlib')
     implementation project(path: ':baselib')
 }

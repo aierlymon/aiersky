@@ -16,6 +16,7 @@ import com.example.baselib.utils.CustomToast;
 import com.example.baselib.utils.KeyBoardUtil;
 import com.example.baselib.utils.StatusBarUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -148,4 +149,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         CustomToast.showToast(this, msg, duration);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

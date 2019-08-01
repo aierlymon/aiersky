@@ -107,7 +107,7 @@ public class SecondActivivty extends BaseMvpActivity<SecondView, SecondPresenter
         super.onBackPressed();
     }
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         Jzvd.resetAllVideos();
     }
